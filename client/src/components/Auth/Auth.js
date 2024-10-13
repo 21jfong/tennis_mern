@@ -45,7 +45,7 @@ const Auth = () => {
     const decoded = jwtDecode(res.credential);
 
     try {
-      const result = { ...decoded, googleId: decoded.given_name }
+      const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture }
       dispatch({ type: 'AUTH', data: { result, token: res.credential } });
 
       navigate('/');

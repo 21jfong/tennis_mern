@@ -3,13 +3,16 @@ import { AppBar, Typography, Toolbar, Avatar, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
-  borderRadius: 15,
-  margin: '30px 0',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '10px 50px',
+  backgroundColor: "#1b1b1b",
+  height: '64px', // Default margin for desktop
+  [theme.breakpoints.down('sm')]: { // Adjust for mobile
+    marginTop: '56px', // Adjust margin for mobile to match the navbar height
+  },
 }));
 
 export const Heading = styled(Typography)({
@@ -27,7 +30,6 @@ export const ProfileContainer = styled(Box)({
   display: 'flex',
   justifyContent: 'space-between',
   width: '400px',
-  color: "black"
 });
 
 export const CustomAvatar = styled(Avatar)(({ theme }) => ({
