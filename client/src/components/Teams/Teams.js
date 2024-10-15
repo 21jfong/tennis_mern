@@ -5,28 +5,27 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { createTeam, deleteTeam } from '../../actions/teams';
+import { deleteTeam } from '../../actions/teams';
 
 const Teams = () => {
   const classes = useStyles();
   const teams = useSelector((state) => state.teams);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleCreateTeam = () => {
+  const handleGoToTeam = () => {
     navigate('/my-teams/create-team'); // Replace with your route
   };
 
   return (
     <Grid2 className={classes.container} container alignItems="stretch" spacing={3}>
       <Grid2>
-        <Button variant="contained" color="primary" onClick={handleCreateTeam}>Create Team</Button>
+        <Button variant="contained" color="primary" onClick={handleGoToTeam}>Create Team</Button>
         <Container>
           {teams ? teams?.map((team) => (
             <Link href={`my-teams/${team._id}`}>
               {team.name}
             </Link>
-          )) : <Typography variant="h3">No Teams Available</Typography>}</Container>
+          )) : <Typography sx={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>No Teams Available</Typography>}</Container>
       </Grid2>
     </Grid2>
   )

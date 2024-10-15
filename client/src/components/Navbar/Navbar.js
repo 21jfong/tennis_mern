@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material'; // Make sure to import Typography here
 import { Link } from 'react-router-dom';
-import { CustomAppBar, CustomToolbar, ProfileContainer, CustomAvatar, Heading } from './styles'; // Import styled components
+import { CustomAppBar, CustomToolbar, ProfileContainer, CustomAvatar, Heading, CustomButton } from './styles'; // Import styled components
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -35,27 +35,26 @@ function Navbar() {
     <CustomAppBar position="fixed">
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
         <Box component="img" src={racket_icon} alt="logo" sx={{ marginLeft: '15px', width: '50px', height: 'auto' }} />
-        <Heading variant="h6" component="a" href="/" sx={{ color: '#E0E0E0', fontSize: '30px' }}>
-          Home
-        </Heading>
-        <Heading variant="h6" component="a" href="/my-teams" sx={{ color: '#E0E0E0', fontSize: '30px' }}>
-          My Teams
+        <Heading variant="h6" component="a" href="/">
+          TrackEZ
         </Heading>
       </Box>
 
-
+      <Heading variant="h6" component="a" href="/my-teams">
+        My Teams
+      </Heading>
 
       <CustomToolbar>
         {user ? (
           <ProfileContainer>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px'}}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <CustomAvatar alt={user?.result?.name} src={user?.result?.imageURL}>{user?.result?.name.charAt(0)}</CustomAvatar>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>{user?.result?.name}</Typography>
             </Box>
-            <Button variant="contained" color="secondary" onClick={logout}>Logout</Button>
+            <Button size="sm" variant="contained" color="secondary" onClick={logout}>Logout</Button>
           </ProfileContainer>
         ) : (
-          <Button component={Link} to="/auth" variant="contained" color="secondary">Sign in</Button>
+          <CustomButton component={Link} to="/auth" variant="contained" color="secondary">Sign in</CustomButton>
         )}
       </CustomToolbar>
     </CustomAppBar>

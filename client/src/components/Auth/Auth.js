@@ -7,7 +7,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signin, signup } from '../../actions/auth';
+import { signin, signup, googleSignUp } from '../../actions/auth';
 
 import { StyledAvatar, StyledForm, StyledPaper, StyledSubmit, StyledGoogleButton } from './styles';
 import Icon from './Icon';
@@ -46,9 +46,10 @@ const Auth = () => {
 
     try {
       const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture }
+      googleSignUp(result);
       dispatch({ type: 'AUTH', data: { result, token: res.credential } });
 
-      navigate('/');
+      navigate(-1);
     } catch (error) {
       console.log(error);
     }
@@ -79,7 +80,7 @@ const Auth = () => {
               <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
               {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" />}
             </Grid2>
-            <StyledSubmit type="submit" fullWidth variant="contained" color="primary" > {isSignup ? 'Sign Up' : 'Sign In'} </StyledSubmit>
+            <StyledSubmit type="submit" fullWidth variant="contained" color="secondary" > {isSignup ? 'Sign Up' : 'Sign In'} </StyledSubmit>
 
             <Grid2 container justifyContent="center" alignItems="center" style={{ margin: '16px 0' }}>
               <GoogleLogin
@@ -102,7 +103,7 @@ const Auth = () => {
             </Grid2>
             <Grid2 container justifyContent="flex-end">
               <Grid2>
-                <Button onClick={switchMode}>
+                <Button color="secondary" onClick={switchMode}>
                   {isSignup ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
                 </Button>
               </Grid2>

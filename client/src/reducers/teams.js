@@ -2,7 +2,6 @@ import { FETCH_ALL, CREATE, UPDATE, DELETE } from "../constants/actionTypes";
 const reduce = (teams = [], action) => {
   switch (action.type) {
     case FETCH_ALL:
-      console.log(action.payload);
       return action.payload;
     case CREATE:
       return [...teams, action.payload];
