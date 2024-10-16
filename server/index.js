@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv'
 
-import postRoutes from "./routes/posts.js"
 import userRoutes from "./routes/users.js"
+import teamsRoutes from "./routes/teams.js"
 
 dotenv.config();
 const app = express();
@@ -16,7 +16,8 @@ app.use(cors());
 
 // goes to localhost:5000/posts
 // app.use('/posts', postRoutes);
-// app.use('/user', userRoutes);
+app.use('/user', userRoutes);
+app.use('/my-teams', teamsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
