@@ -22,3 +22,4 @@ export const deleteTeam = (id) => API.delete(`/my-teams/${id}`);
 
 export const signIn = (formData) => API.post('/user/signin', formData);
 export const signUp = (formData) => API.post('/user/signup', formData);
+export const googleSignIn = (formData) => API.post('/user/googlesignin', formData);

@@ -7,7 +7,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signin, signup, googleSignUp } from '../../actions/auth';
+import { signin, signup, googlesignin } from '../../actions/auth';
 
 import { StyledAvatar, StyledForm, StyledPaper, StyledSubmit, StyledGoogleButton } from './styles';
 import Icon from './Icon';
@@ -25,6 +25,7 @@ const Auth = () => {
     e.preventDefault();
 
     if (isSignup) {
+      console.log(formData);
       dispatch(signup(formData, navigate));
     } else {
       dispatch(signin(formData, navigate));
@@ -45,8 +46,9 @@ const Auth = () => {
     const decoded = jwtDecode(res.credential);
 
     try {
-      const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture }
-      googleSignUp(result);
+      const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture, firstName: decoded.name.split(" ")[0], lastName: (decoded.name.split(" ")[1] || ""), password: decoded.sub }
+      console.log(result);
+      dispatch(googlesignin(result, navigate));
       dispatch({ type: 'AUTH', data: { result, token: res.credential } });
 
       navigate(-1);

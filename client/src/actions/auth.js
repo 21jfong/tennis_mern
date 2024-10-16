@@ -7,7 +7,7 @@ export const signin = (formData, navigate) => async (dispatch) => {
 
     dispatch({ type: AUTH, data });
 
-    navigate('/');
+    navigate(-1);
   } catch (error) {
     console.log(error);
   }
@@ -20,15 +20,20 @@ export const signup = (formData, navigate) => async (dispatch) => {
 
     dispatch({ type: AUTH, data });
 
-    navigate('/');
+    navigate(-1);
   } catch (error) {
     console.log(error);
   }
 }
 
-export const googleSignUp = (formData) => async (dispatch) => {
+export const googlesignin = (formData, navigate) => async (dispatch) => {
   try {
-    await api.googleSignUp(formData);
+
+    const { data } = await api.googleSignIn(formData);
+
+    dispatch({ type: AUTH, data });
+
+    navigate(-1);
   } catch (error) {
     console.log(error);
   }
