@@ -13,7 +13,7 @@ export const getTeams = () => async (dispatch) => {
 
 export const createTeam = (team) => async (dispatch) => {
   try {
-    const { data } = await api.createTeams(team);
+    const { data } = await api.createTeam(team);
 
     dispatch({ type: CREATE, payload: data })
   } catch (error) {

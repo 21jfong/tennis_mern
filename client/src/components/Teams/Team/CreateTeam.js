@@ -20,7 +20,6 @@ const CreateTeam = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     dispatch(createTeam({ ...teamData, captain: user }));
     navigate("/my-teams");
     clear();
