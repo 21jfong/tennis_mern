@@ -12,13 +12,14 @@ const Teams = () => {
   const teams = useSelector((state) => state.teams);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = localStorage.getItem('profile');
 
   useEffect(() => {
-    dispatch(getTeams());
+    dispatch(getTeams(user));
   }, [dispatch])
 
   const handleGoToTeam = () => {
-    navigate('/my-teams/create-team'); // Replace with your route
+    navigate('/my-teams/create-team');
   };
 
   return (

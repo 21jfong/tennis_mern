@@ -7,8 +7,6 @@ import Player from '../models/player.js';
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log(req.body);
-
   try {
     const existingUser = await User.findOne({ email });
 

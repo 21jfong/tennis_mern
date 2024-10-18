@@ -25,7 +25,6 @@ const Auth = () => {
     e.preventDefault();
 
     if (isSignup) {
-      console.log(formData);
       dispatch(signup(formData, navigate));
     } else {
       dispatch(signin(formData, navigate));
@@ -47,7 +46,6 @@ const Auth = () => {
 
     try {
       const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture, firstName: decoded.name.split(" ")[0], lastName: (decoded.name.split(" ")[1] || ""), password: decoded.sub }
-      console.log(result);
       dispatch(googlesignin(result, navigate));
       dispatch({ type: 'AUTH', data: { result, token: res.credential } });
 
