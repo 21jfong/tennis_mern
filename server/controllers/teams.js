@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import Team from '../models/team.js';
 import Player from '../models/player.js';
+import crypto from 'crypto';
+
+const generateTeamCode = () => {
+  return crypto.randomBytes(3).toString('hex').toUpperCase(); // Example: 'A1B2C3'
+};
 
 export const getTeams = async (req, res) => {
   try {
@@ -25,7 +30,7 @@ export const getTeams = async (req, res) => {
 export const createTeam = async (req, res) => {
   const team = req.body;
   const captain = await Player.findOne({ user_id: req.userId });
-  const updatedTeam = { name: team.name, captain, players: team.players }
+  const updatedTeam = { name: team.name, captain, players: team.players, teamCode: generateTeamCode() }
 
   const newTeam = new Team({ ...updatedTeam });
 
