@@ -2,7 +2,7 @@ import { FETCH_ALL, CREATE, UPDATE, DELETE } from "../constants/actionTypes";
 const reduce = (teams = [], action) => {
   switch (action.type) {
     case FETCH_ALL:
-      return action.payload; // maybe return only the teams your user is a part of
+      return action.payload;
     case CREATE:
       return [...teams, action.payload];
     case UPDATE:

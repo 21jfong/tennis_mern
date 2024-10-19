@@ -16,7 +16,7 @@ API.interceptors.request.use((req) => {
 // export const deletePost = (id) => API.delete(`/posts/${id}`);
 // export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
 
-export const fetchTeams = (user_id) => API.get('/my-teams', user_id);
+export const fetchTeams = (user) => API.get('/my-teams', user);
 export const createTeam = (newTeam) => API.post('/my-teams/create-team', newTeam);
 export const deleteTeam = (id) => API.delete(`/my-teams/${id}`);
 

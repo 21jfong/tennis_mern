@@ -59,7 +59,7 @@ export const googlesignin = async (req, res) => {
       const existingPlayer = await Player.findOne({ user_id: existingUser._id });
 
       if (!existingPlayer) {
-        await Player.create({ name: `${firstName} ${lastName}`, user_id: existingUser._id });
+        await Player.create({ name: `${firstName} ${lastName}`, user_id: existingUser.id });
       }
     }
   } catch (error) {

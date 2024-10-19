@@ -24,7 +24,7 @@ export const getTeams = async (req, res) => {
 
 export const createTeam = async (req, res) => {
   const team = req.body;
-  const captain = await Player.findOne({ user_id: team.captain.result._id });
+  const captain = await Player.findOne({ user_id: req.userId });
   const updatedTeam = { name: team.name, captain, players: team.players }
 
   const newTeam = new Team({ ...updatedTeam });
