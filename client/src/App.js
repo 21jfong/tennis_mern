@@ -10,6 +10,7 @@ import Home from './components/Home/Home';
 import Auth from './components/Auth/Auth';
 import Teams from './components/Teams/Teams';
 import CreateTeam from './components/Teams/Team/CreateTeam';
+import JoinTeam from './components/Teams/Team/JoinTeam';
 
 import { MainContent } from './styles';
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" exact element={<MainContent><Auth /></MainContent>} />
             <Route path="/my-teams" exact element={<ProtectedRoute><MainContent><Teams /></MainContent></ProtectedRoute>} />
             <Route path="/my-teams/create-team" exact element={<ProtectedRoute><MainContent><CreateTeam /></MainContent></ProtectedRoute>} />
+            <Route path="/my-teams/join-team" exact element={<ProtectedRoute><MainContent><JoinTeam /></MainContent></ProtectedRoute>} />v
           </Routes>
         </Container>
       </BrowserRouter>

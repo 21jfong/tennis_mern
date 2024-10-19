@@ -42,3 +42,17 @@ export const createTeam = async (req, res) => {
     res.status(409).json({ message: error.message });
   }
 }
+
+export const joinTeam = async (req, res) => {
+  const { code } = req.params;
+  if (!req.userId) return res.json({ message: "Unauthenticated" });
+
+  const team = await Team.findOne({ teamCode: code });
+  if (!team) return res.status(404).send(`No Team with that code ${teamCode}.`);
+
+  const player = await Player.findOne({ user_id: req.userId });
+  team.players.push(player);
+
+  const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
+  res.json(updatedTeam);
+}

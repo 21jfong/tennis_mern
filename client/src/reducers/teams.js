@@ -6,7 +6,7 @@ const reduce = (teams = [], action) => {
     case CREATE:
       return [...teams, action.payload];
     case UPDATE:
-      return teams.map((post) => post._id === action.payload._id ? action.payload : post);
+      return teams.map((team) => team._id === action.payload._id ? action.payload : team);
     case DELETE:
       return teams.filter((post) => post._id !== action.payload);
     default:
