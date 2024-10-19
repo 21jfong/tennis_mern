@@ -7,8 +7,6 @@ import Player from '../models/player.js';
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log(req.body);
-
   try {
     const existingUser = await User.findOne({ email });
 
@@ -61,7 +59,7 @@ export const googlesignin = async (req, res) => {
       const existingPlayer = await Player.findOne({ user_id: existingUser._id });
 
       if (!existingPlayer) {
-        await Player.create({ name: `${firstName} ${lastName}`, user_id: existingUser._id });
+        await Player.create({ name: `${firstName} ${lastName}`, user_id: existingUser.id });
       }
     }
   } catch (error) {

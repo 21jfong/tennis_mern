@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
 
 const auth = async (req, res, next) => {
   try {
@@ -13,8 +14,8 @@ const auth = async (req, res, next) => {
       req.userId = decodedData?.id;
     } else {
       decodedData = jwt.decode(token);
-
-      req.userId = decodedData?.sub;
+      const user = await User.findOne({ email: decodedData.email });
+      req.userId = user.id.toString();
     }
 
     next();

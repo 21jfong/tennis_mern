@@ -1,9 +1,9 @@
 import * as api from '../api';
 import { FETCH_ALL, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
 
-export const getTeams = () => async (dispatch) => {
+export const getTeams = (user) => async (dispatch) => {
   try {
-    const { data } = await api.fetchTeams();
+    const { data } = await api.fetchTeams(user);
 
     dispatch({ type: FETCH_ALL, payload: data });
   } catch (error) {
