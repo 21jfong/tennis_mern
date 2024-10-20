@@ -48,11 +48,15 @@ export const joinTeam = async (req, res) => {
   if (!req.userId) return res.json({ message: "Unauthenticated" });
 
   const team = await Team.findOne({ teamCode: code });
-  if (!team) return res.status(404).send(`No Team with that code ${teamCode}.`);
+  if (!team) return res.status(404).send(`No Team with that code ${code}.`);
 
   const player = await Player.findOne({ user_id: req.userId });
-  team.players.push(player);
 
-  const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
-  res.json(updatedTeam);
+  if (!team.players.includes(player._id)) {
+    team.players.push(player);
+    const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
+    res.json(updatedTeam);
+  } else {
+    return res.status(404).send("Player is already on the team");
+  }
 }
