@@ -30,3 +30,13 @@ export const deleteTeam = (id) => async (dispatch) => {
     console.log(error);
   }
 }
+
+export const joinTeam = (teamCode) => async (dispatch) => {
+  try {
+    await api.joinTeam(teamCode);
+
+    dispatch({ type: UPDATE, payload: teamCode })
+  } catch (error) {
+    console.log(error);
+  }
+}

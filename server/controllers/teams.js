@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import Team from '../models/team.js';
 import Player from '../models/player.js';
+import crypto from 'crypto';
+
+const generateTeamCode = () => {
+  return crypto.randomBytes(3).toString('hex').toUpperCase(); // Example: 'A1B2C3'
+};
 
 export const getTeams = async (req, res) => {
   try {
@@ -25,7 +30,7 @@ export const getTeams = async (req, res) => {
 export const createTeam = async (req, res) => {
   const team = req.body;
   const captain = await Player.findOne({ user_id: req.userId });
-  const updatedTeam = { name: team.name, captain, players: team.players }
+  const updatedTeam = { name: team.name, captain, players: team.players, teamCode: generateTeamCode() }
 
   const newTeam = new Team({ ...updatedTeam });
 
@@ -35,5 +40,23 @@ export const createTeam = async (req, res) => {
 
   } catch (error) {
     res.status(409).json({ message: error.message });
+  }
+}
+
+export const joinTeam = async (req, res) => {
+  const { code } = req.params;
+  if (!req.userId) return res.json({ message: "Unauthenticated" });
+
+  const team = await Team.findOne({ teamCode: code });
+  if (!team) return res.status(404).send(`No Team with that code ${code}.`);
+
+  const player = await Player.findOne({ user_id: req.userId });
+
+  if (!team.players.includes(player._id) && !team.captain.equals(player._id)) {
+    team.players.push(player);
+    const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
+    res.json(updatedTeam);
+  } else {
+    return res.status(404).send("Player is already on the team");
   }
 }
