@@ -19,6 +19,10 @@ app.use(cors());
 app.use('/user', userRoutes);
 app.use('/my-teams', teamsRoutes);
 
+app.get('/', (req, res) => {
+  res.send("hello to tennis api");
+})
+
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.CONNECTION_URL, {})
