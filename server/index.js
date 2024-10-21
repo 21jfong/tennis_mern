@@ -12,6 +12,13 @@ const app = express();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+
+const corsOptions = {
+  origin: process.env.ORIGIN,  // Allow requests only from your frontend
+  methods: "GET,POST,PATCH,DELETE",
+  credentials: true,
+};
+// app.use(cors(corsOptions));
 app.use(cors());
 
 // goes to localhost:5000/posts

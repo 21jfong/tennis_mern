@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:5000' });
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API = axios.create({ baseURL: API_BASE_URL });
 
 API.interceptors.request.use((req) => {
   if (localStorage.getItem('profile')) {
@@ -9,12 +10,6 @@ API.interceptors.request.use((req) => {
 
   return req;
 });
-
-// export const fetchPosts = () => API.get('/posts');
-// export const createPosts = (newPost) => API.post('/posts', newPost);
-// export const updatePost = (id, updatedPost) => API.patch(`/posts/${id}`, updatedPost);
-// export const deletePost = (id) => API.delete(`/posts/${id}`);
-// export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
 
 export const fetchTeams = (user) => API.get('/my-teams', user);
 export const createTeam = (newTeam) => API.post('/my-teams/create-team', newTeam);
