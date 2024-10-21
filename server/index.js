@@ -18,11 +18,9 @@ const corsOptions = {
   methods: "GET,POST,PATCH,DELETE",
   credentials: true,
 };
-// app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
 
 // goes to localhost:5000/posts
-// app.use('/posts', postRoutes);
 app.use('/user', userRoutes);
 app.use('/my-teams', teamsRoutes);
 
