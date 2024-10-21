@@ -19,9 +19,23 @@ export const getTeams = async (req, res) => {
         { 'captain': player.id },
         { 'players': player.id }
       ]
-    });
+    }).populate('captain players');
 
     res.status(200).json(teams);
+  } catch (error) {
+    res.status(404).json({ message: error.message })
+  }
+};
+
+export const getTeam = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No team with that ID.');
+
+    const team = await Team.findById(id).populate('captain players');
+
+    res.status(200).json(team);
   } catch (error) {
     res.status(404).json({ message: error.message })
   }
