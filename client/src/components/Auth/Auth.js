@@ -13,6 +13,7 @@ import { StyledAvatar, StyledForm, StyledPaper, StyledSubmit, StyledGoogleButton
 import Icon from './Icon';
 
 const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+const client_id = process.env.REACT_APP_CLIENT_ID;
 
 const Auth = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -59,7 +60,7 @@ const Auth = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId='526443852473-83jii1q50cvv21rlb16la3tnp74tksk0.apps.googleusercontent.com'>
+    <GoogleOAuthProvider clientId={client_id}>
       <Container component="main" maxWidth="xs">
         <StyledPaper>
           <StyledAvatar>
