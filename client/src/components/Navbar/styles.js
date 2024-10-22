@@ -41,7 +41,7 @@ export const CustomAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 export const CustomButton = styled(Button)(({ theme }) => ({
-  fontSize: '1rem', // Default size for larger screens
+  fontSize: '0.9rem', // Default size for larger screens
   [theme.breakpoints.down('md')]: {
     fontSize: '0.7rem', // Smaller size for smaller screens
   },

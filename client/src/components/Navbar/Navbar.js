@@ -51,10 +51,10 @@ function Navbar() {
               <CustomAvatar alt={user?.result?.name} src={user?.result?.imageURL}>{user?.result?.name.charAt(0)}</CustomAvatar>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>{user?.result?.name}</Typography>
             </Box>
-            <Button size="sm" variant="contained" color="secondary" onClick={logout}>Logout</Button>
+            <CustomButton size="sm" variant="contained" color="secondary" onClick={logout}>Log out</CustomButton>
           </ProfileContainer>
         ) : (
-          <CustomButton component={Link} to="/auth" variant="contained" color="secondary">Sign in</CustomButton>
+          <CustomButton component={Link} size="sm" to="/auth" variant="contained" color="secondary">Sign in</CustomButton>
         )}
       </CustomToolbar>
     </CustomAppBar>

@@ -11,12 +11,16 @@ export const ThemeProviderWrapper = ({ children }) => {
     palette: {
       mode: 'dark', // Always use dark mode
       primary: {
-        main: '#353633',
+        main: '#353633', // Dark
         dark: '#1b1b1b',
+        lighter: '#52544F'
       },
       secondary: {
-        main: '#E0E0E0',
+        main: '#E0E0E0', // Light
       },
+      ternary: {
+        main: '#C2C2C2'
+      }
     },
   });
 
