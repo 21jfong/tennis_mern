@@ -8,12 +8,12 @@
       "type": "image/png"
     },
     {
-      "src": "court.png",
+      "src": "tennis-ball.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "court.png",
+      "src": "tennis-ball.png",
       "type": "image/png",
       "sizes": "512x512"
     }
