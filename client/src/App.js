@@ -33,16 +33,17 @@ const App = () => {
               <Route path="/my-teams/join-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><JoinTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Team setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>}></Route>
             </Routes>
-            {isAlert && (
+            {(isAlert && alertMessage) && (
               <Alert
                 severity='error'
                 sx={{
                   position: 'fixed',
                   bottom: 16,
                   left: 16,
-                  zIndex: 1300
+                  zIndex: 1300,
+                  maxWidth: '400px', // Max width for larger screens
                 }}
-                onClose={() => setIsAlert(false)} // Close the Alert
+                onClose={() => setIsAlert(false)}
               >
                 {alertMessage}
               </Alert>
