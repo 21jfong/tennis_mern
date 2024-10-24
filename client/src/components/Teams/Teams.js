@@ -21,7 +21,7 @@ const Teams = ({ setIsAlert, setAlertMessage }) => {
     };
 
     fetchData(); // Call the async function
-  }, [teams, user, dispatch])
+  }, [])
 
   const handleCreateTeam = () => {
     navigate('/my-teams/create-team');
