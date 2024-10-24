@@ -31,13 +31,13 @@ export const getTeam = async (req, res) => {
   const { id } = req.params;
 
   try {
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No team with that ID.');
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ message: 'No team with that ID.' });
 
     const team = await Team.findById(id).populate('captain players');
 
     res.status(200).json(team);
   } catch (error) {
-    res.status(404).json({ message: error.message })
+    res.status(404).json({ message: "Error finding team" })
   }
 };
 
@@ -53,16 +53,16 @@ export const createTeam = async (req, res) => {
     res.status(201).json(newTeam);
 
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(409).json({ message: "Error saving team" });
   }
 }
 
 export const joinTeam = async (req, res) => {
   const { code } = req.params;
-  if (!req.userId) return res.json({ message: "Unauthenticated" });
+  if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });
 
   const team = await Team.findOne({ teamCode: code });
-  if (!team) return res.status(404).send(`No Team with that code ${code}.`);
+  if (!team) return res.status(404).json({ message: `No Team with code: ${code}` });
 
   const player = await Player.findOne({ user_id: req.userId });
 
@@ -71,6 +71,6 @@ export const joinTeam = async (req, res) => {
     const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
     res.json(updatedTeam);
   } else {
-    return res.status(404).send("Player is already on the team");
+    return res.status(403).json({ message: "Player is already on the team" });
   }
 }

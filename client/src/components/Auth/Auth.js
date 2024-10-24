@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Container, Typography, Grid2, Button } from '@mui/material';
+import { Container, Typography, Grid2, Button, Alert } from '@mui/material';
 import LockedOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Input from './Input';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -15,21 +15,25 @@ import Icon from './Icon';
 const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
 const client_id = process.env.REACT_APP_CLIENT_ID;
 
-const Auth = () => {
+const Auth = ({ setIsAlert, setAlertMessage }) => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let response = {}
+
     if (isSignup) {
-      dispatch(signup(formData, navigate));
+      response = await dispatch(signup(formData, navigate));
     } else {
-      dispatch(signin(formData, navigate));
+      response = await dispatch(signin(formData, navigate));
     }
+
+    checkForAlert(response);
   };
 
   const handleChange = (e) => {
@@ -47,7 +51,10 @@ const Auth = () => {
 
     try {
       const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture, firstName: decoded.name.split(" ")[0], lastName: (decoded.name.split(" ")[1] || ""), password: decoded.sub }
-      dispatch(googlesignin(result, navigate));
+
+      let response = {}
+      response = dispatch(googlesignin(result, navigate));
+      checkForAlert(response);
       dispatch({ type: 'AUTH', data: { result, token: res.credential } });
 
       navigate(-1);
@@ -57,7 +64,16 @@ const Auth = () => {
   };
   const googleFailure = () => {
     console.log("Google Sign In was unsuccessful. Try again later.");
+    setAlertMessage("Google Sign In was unsuccessful. Try again later.");
+    setIsAlert(true);
   };
+
+  const checkForAlert = (res) => {
+    if (res?.status && res.status !== 200) {
+      setAlertMessage(res.response.data.message);
+      setIsAlert(true);
+    }
+  }
 
   return (
     <GoogleOAuthProvider clientId={client_id}>

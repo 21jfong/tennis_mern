@@ -5,7 +5,6 @@ export default makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    height: '100vh' // Ensures full viewport height
   },
   smMargin: {
     margin: 10,

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { getTeams, deleteTeam } from '../../actions/teams';
 
-const Teams = () => {
+const Teams = ({ setIsAlert, setAlertMessage }) => {
   const classes = useStyles();
   const teams = useSelector((state) => state.teams);
   const navigate = useNavigate();
@@ -15,7 +15,12 @@ const Teams = () => {
   const user = localStorage.getItem('profile');
 
   useEffect(() => {
-    dispatch(getTeams(user));
+    const fetchData = async () => {
+      const response = await dispatch(getTeams(user));
+      checkForAlert(response);
+    };
+
+    fetchData(); // Call the async function
   }, [teams, user, dispatch])
 
   const handleCreateTeam = () => {
@@ -25,9 +30,17 @@ const Teams = () => {
   const handleJoinTeam = () => {
     navigate('/my-teams/join-team');
   };
+
+  const checkForAlert = (res) => {
+    if (res?.status && res.status !== 200) {
+      setAlertMessage(res.response.data.message);
+      setIsAlert(true);
+    }
+  }
+
   return (
     <Grow in>
-      <Grid2 container alignItems="stretch" spacing={3}>
+      <Grid2 container spacing={3}>
         <Grid2 container>
           <Button variant="contained" color="primary" onClick={handleCreateTeam}>Create Team</Button>
           <Button variant="contained" color="primary" onClick={handleJoinTeam}>Join Team</Button>
