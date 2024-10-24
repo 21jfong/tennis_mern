@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { createTeam } from '../../../actions/teams';
 
 
-const CreateTeam = () => {
+const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
   const [teamData, setTeamData] = useState({ name: '', captain: null, players: [] });
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -20,10 +20,18 @@ const CreateTeam = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(createTeam({ ...teamData, captain: user }));
+    const response = await dispatch(createTeam({ ...teamData, captain: user }));
+    checkForAlert(response);
     navigate("/my-teams");
     clear();
   };
+
+  const checkForAlert = (res) => {
+    if (res?.status && res.status !== 201) {
+      setAlertMessage(res.response.data.message);
+      setIsAlert(true);
+    }
+  }
 
   return (
     <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>

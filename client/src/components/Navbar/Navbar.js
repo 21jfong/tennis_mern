@@ -5,6 +5,7 @@ import { CustomAppBar, CustomToolbar, ProfileContainer, CustomAvatar, Heading, C
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { googleLogout } from '@react-oauth/google';
 
 import racket_icon from '../../images/racket_icon.png';
 
@@ -16,6 +17,7 @@ function Navbar() {
 
   const logout = () => {
     dispatch({ type: "LOGOUT" })
+    googleLogout();
     navigate('/');
     setUser(null);
   }

@@ -54,7 +54,7 @@ export const googlesignin = async (req, res) => {
     // check if the google user has a mongo user, if not then create user and player
     if (!existingUser) {
       const result = await User.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
-      await Player.create({ name: `${firstName} ${lastName}`, id: result._id });
+      await Player.create({ name: `${firstName} ${lastName}`, user_id: result._id });
     } else {
       const existingPlayer = await Player.findOne({ user_id: existingUser._id });
 

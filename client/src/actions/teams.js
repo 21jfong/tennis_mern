@@ -7,37 +7,7 @@ export const getTeams = (user) => async (dispatch) => {
 
     dispatch({ type: FETCH_ALL, payload: data });
   } catch (error) {
-    console.log(error);
-  }
-}
-
-export const createTeam = (team) => async (dispatch) => {
-  try {
-    const { data } = await api.createTeam(team);
-
-    dispatch({ type: CREATE, payload: data })
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export const deleteTeam = (id) => async (dispatch) => {
-  try {
-    await api.deleteTeam(id);
-
-    dispatch({ type: DELETE, payload: id })
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export const joinTeam = (teamCode) => async (dispatch) => {
-  try {
-    await api.joinTeam(teamCode);
-
-    dispatch({ type: UPDATE, payload: teamCode })
-  } catch (error) {
-    console.log(error);
+    return error;
   }
 }
 
@@ -47,6 +17,36 @@ export const getTeam = (id) => async (dispatch) => {
 
     dispatch({ type: FETCH, payload: data })
   } catch (error) {
-    console.log(error);
+    return error;
+  }
+}
+
+export const createTeam = (team) => async (dispatch) => {
+  try {
+    const { data } = await api.createTeam(team);
+
+    dispatch({ type: CREATE, payload: data })
+  } catch (error) {
+    return error;
+  }
+}
+
+export const deleteTeam = (id) => async (dispatch) => {
+  try {
+    await api.deleteTeam(id);
+
+    dispatch({ type: DELETE, payload: id })
+  } catch (error) {
+    return error;
+  }
+}
+
+export const joinTeam = (teamCode) => async (dispatch) => {
+  try {
+    await api.joinTeam(teamCode);
+
+    dispatch({ type: UPDATE, payload: teamCode })
+  } catch (error) {
+    return error;
   }
 }

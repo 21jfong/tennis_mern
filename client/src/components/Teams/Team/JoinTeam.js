@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { joinTeam } from '../../../actions/teams';
 
 
-const CreateTeam = () => {
+const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
   const [teamCode, setTeamCode] = useState({ code: "" });
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -19,10 +19,19 @@ const CreateTeam = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(joinTeam(teamCode.code));
+    const response = await dispatch(joinTeam(teamCode.code));
+    checkForAlert(response);
     navigate(-1);
     clear();
   };
+
+  const checkForAlert = (res) => {
+    console.log(res)
+    if (res?.status && res.status !== 200) {
+      setAlertMessage(res.response.data.message);
+      setIsAlert(true);
+    }
+  }
 
   return (
     <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
