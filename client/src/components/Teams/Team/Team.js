@@ -50,7 +50,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
               <CardContent>
                 <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>Roster</Typography>
                 <hr />
-                {team?.players?.count > 0 ? team?.players.map((player, index) => (
+                {team?.players?.length > 0 ? team?.players.map((player, index) => (
                   <Typography component="p" key={player._id}>
                     {`${index + 1}.${'\u00A0'.repeat(4)}${player.name}`}
                   </Typography>

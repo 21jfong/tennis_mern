@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TextField, Button, Typography, Paper, Grid2, Box } from '@mui/material';
+import { TextField, Button, Typography, Paper, Grid2, Box, Grow } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import useStyles from '../styles';
 import { useNavigate } from 'react-router-dom';
@@ -34,17 +34,19 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
   }
 
   return (
-    <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
-      <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-        <Box>
-          <Grid2 container justifyContent={"center"}><Typography variant="h6">Find Team</Typography></Grid2>
-          <Grid2 container>
-            <Grid2><TextField name="code" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Code" value={teamCode.code} onChange={(e) => setTeamCode({ code: e.target.value })} /></Grid2>
-            <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Join</Button></Grid2>
-          </Grid2>
-        </Box>
-      </form>
-    </Paper>
+    <Grow in>
+      <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
+        <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
+          <Box>
+            <Grid2 container justifyContent={"center"}><Typography variant="h6">Find Team</Typography></Grid2>
+            <Grid2 container>
+              <Grid2><TextField name="code" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Code" value={teamCode.code} onChange={(e) => setTeamCode({ code: e.target.value })} /></Grid2>
+              <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Join</Button></Grid2>
+            </Grid2>
+          </Box>
+        </form>
+      </Paper>
+    </Grow>
   );
 }
 
