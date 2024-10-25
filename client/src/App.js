@@ -10,9 +10,9 @@ import Home from './components/Home/Home';
 import Auth from './components/Auth/Auth';
 import Teams from './components/Teams/Teams';
 import Team from './components/Teams/Team/Team';
-import CreateTeam from './components/Teams/Team/CreateTeam';
-import EditTeam from './components/Teams/Team/EditTeam';
-import JoinTeam from './components/Teams/Team/JoinTeam';
+import CreateTeam from './components/Teams/Team/Actions/CreateTeam';
+import EditTeam from './components/Teams/Team/Actions/EditTeam';
+import JoinTeam from './components/Teams/Team/Actions/JoinTeam';
 
 import useStyles from './styles';
 
