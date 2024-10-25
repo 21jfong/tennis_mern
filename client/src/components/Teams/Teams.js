@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react'
 import useStyles from './styles'
-import { Button, Container, Grid2, Link, Typography, Grow } from '@mui/material'
+import { Button, Container, Grid2, Link, Typography, Grow, Card, Paper, Box, CardContent } from '@mui/material'
+import { Link as React_Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import ForwardIcon from '@mui/icons-material/Forward';
 
 import { getTeams, deleteTeam } from '../../actions/teams';
 
@@ -46,15 +49,29 @@ const Teams = ({ setIsAlert, setAlertMessage }) => {
           <Button variant="contained" color="primary" onClick={handleJoinTeam}>Join Team</Button>
         </Grid2>
         <Container className={classes.mainContainer}>
-          <Typography variant='h4'>My Teams</Typography>
-          {teams.length > 0 ? teams?.map((team) => (
-            <Link href={`my-teams/${team._id}`} key={team._id} sx={{ zIndex: 1 }}>
-              {`${team.name} - Captain: ${team.captain.name}`} <br />
-            </Link>
-          )) : <Typography sx={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>No Teams Available</Typography>}
+          <Paper sx={{ bgcolor: "primary.main", padding: { xs: 3, md: 5 } }}>
+            <Typography variant='h3' sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>My Teams</Typography>
+            <Box>
+              {teams.length > 0 ? teams?.map((team) => (
+                <Card sx={{ bgcolor: 'primary.lighter', padding: 2, margin: 2 }} className={classes.card} key={team._id}>
+                  <Grid2 container justifyContent="space-between" alignItems="center" sx={{ gap: 2 }}>
+                    <Grid2>
+                      <Link color="secondary" href={`my-teams/${team._id}`} sx={{ zIndex: 1 }}>
+                        <Typography>{`${team.name} - Captain: ${team.captain.name}`}</Typography>
+                      </Link>
+                    </Grid2>
+
+                    <Grid2 sx={{ display: { xs: 'none', md: 'flex' } }}>
+                      <Button variant="contained" component={React_Link} to={`${team._id}`}><ForwardIcon /></Button>
+                    </Grid2>
+                  </Grid2>
+                </Card>
+              )) : <Typography sx={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>No Teams Available</Typography>}
+            </Box>
+          </Paper>
         </Container>
       </Grid2>
-    </Grow>
+    </Grow >
   )
 }
 

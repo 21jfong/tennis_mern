@@ -12,4 +12,12 @@ export default makeStyles((theme) => ({
   actionDiv: {
     textAlign: 'center',
   },
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    borderRadius: '15px',
+    height: '100%',
+    position: 'relative',
+  },
 }));

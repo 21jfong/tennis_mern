@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import useStyles from './styles';
 
 import { Card, CardActions, CardContent, Grid2, Button, Typography, Paper, Container, Grow } from '@mui/material';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
 import { getTeam } from '../../../actions/teams';
-
 
 const Team = ({ setIsAlert, setAlertMessage }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
   const team = useSelector((state) => state.teams);
 
@@ -23,6 +25,10 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
     fetchData(); // Call the async function
   }, [id, dispatch]);
 
+  const handleEdit = (id) => {
+    navigate(`/my-teams/edit-team/${id}`);
+  };
+
   const checkForAlert = (res) => {
     if (res?.status && res.status !== 200) {
       setAlertMessage(res.response.data.message);
@@ -32,34 +38,39 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
 
   return (
     <Grow in>
-      <Container>
-        <Grid2 container sx={{ gap: 20 }}>
-          <Typography color="primary"><strong>Team code: </strong>{`${team?.teamCode}`}</Typography>
-          <Typography color="primary"><strong>Captain: </strong>{`${team?.captain?.name}`}</Typography>
-        </Grid2>
-        <Paper className={classes.paper} sx={{ bgcolor: 'primary.main' }}>
-          <Typography variant="h3" sx={{ padding: 2 }}>{team.name}</Typography>
-          <Card className={classes.card} sx={{ minWidth: 150, bgcolor: 'primary.lighter' }}>
-            <CardContent>
-              <Typography variant="h3">Roster</Typography>
-              <hr />
-              {team?.players ? team?.players.map((player, index) => (
-                <Typography component="p" key={player._id}>
-                  {`${index + 1}.${'\u00A0'.repeat(4)}${player.name}`}
-                </Typography>
-              )) : <Typography sx={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)', textAlign: 'center' }}>Team Not Available</Typography>}
-            </CardContent>
-          </Card>
+      <Grid2 container direction="column" justifyContent="space-between" sx={{ gap: 2 }}>
+        <Grid2>
+          <Grid2 container sx={{ gap: { xs: 1, md: 20 } }}>
+            <Typography color="primary"><strong>Team code: </strong>{`${team?.teamCode}`}</Typography>
+            <Typography color="primary"><strong>Captain: </strong>{`${team?.captain?.name}`}</Typography>
+          </Grid2>
+          <Paper className={classes.paper} sx={{ bgcolor: 'primary.main' }}>
+            <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>{team.name}</Typography>
+            <Card className={classes.card} sx={{ minWidth: 150, bgcolor: 'primary.lighter' }}>
+              <CardContent>
+                <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>Roster</Typography>
+                <hr />
+                {team?.players?.count > 0 ? team?.players.map((player, index) => (
+                  <Typography component="p" key={player._id}>
+                    {`${index + 1}.${'\u00A0'.repeat(4)}${player.name}`}
+                  </Typography>
+                )) : <Typography>No Players <SentimentVeryDissatisfiedIcon /></Typography>}
+              </CardContent>
+            </Card>
 
-          <Card className={classes.card} sx={{ bgcolor: 'primary.lighter' }}>
-            <CardContent>
-              <Typography variant="h3" sx={{ padding: 2 }}>Recent Matches</Typography>
-              <hr />
-              <Typography>No Matches Yet</Typography>
-            </CardContent>
-          </Card>
-        </Paper>
-      </Container>
+            <Card className={classes.card} sx={{ bgcolor: 'primary.lighter' }}>
+              <CardContent>
+                <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>Recent Matches</Typography>
+                <hr />
+                <Typography>No Matches Yet</Typography>
+              </CardContent>
+            </Card>
+          </Paper>
+        </Grid2>
+        <Grid2 container justifyContent="flex-end">
+          <Button variant='contained' onClick={() => handleEdit(team._id)}>Edit Team</Button>
+        </Grid2>
+      </Grid2>
     </Grow>
   )
 }

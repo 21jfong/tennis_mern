@@ -57,6 +57,15 @@ export const createTeam = async (req, res) => {
   }
 }
 
+export const editTeam = async (req, res) => {
+
+}
+
+export const deleteTeam = async (req, res) => {
+
+}
+
+
 export const joinTeam = async (req, res) => {
   const { code } = req.params;
   if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });
