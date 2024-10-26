@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   TextField, Button, Typography, Paper, Grid2, Box, Container, Card, Grow, List, ListItem, ListItemText,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  FormControl, InputLabel, MenuItem, Select
 } from '@mui/material';
 
 import useStyles from '../styles';
@@ -11,17 +12,16 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-import { editTeam, getTeam, removePlayer, deleteTeam } from '../../../../actions/teams';
+import { editTeam, getTeam, deleteTeam } from '../../../../actions/teams';
 
 const EditTeam = ({ setIsAlert, setAlertMessage }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [teamData, setTeamData] = useState({ name: '', captain: null, players: [] });
-  const [open, setOpen] = useState(false);
-  const user = JSON.parse(localStorage.getItem('profile'));
   const team = useSelector((state) => state.teams);
+  const [teamData, setTeamData] = useState({ name: team.name, captain: team.captain, players: team.players, teamCode: team.teamCode });
+  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
 
@@ -36,15 +36,14 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await dispatch(editTeam({ ...teamData, captain: user }));
+    const response = await dispatch(editTeam(id, { ...teamData, oldCaptain: team.captain }));
     checkForAlert(response);
     navigate(-1);
   };
 
-  const handleRemovePlayer = async (playerId) => {
-    const response = await dispatch(removePlayer({ teamId: id, playerId }));
-    await dispatch(getTeam(id));
-    checkForAlert(response);
+  const handleRemovePlayer = async (p) => {
+    const newPlayers = teamData.players.filter(player => player !== p);
+    setTeamData({ ...teamData, players: newPlayers })
   };
 
   const handleConfirmDelete = async () => {
@@ -58,6 +57,15 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleCaptainSelectChange = (event) => {
+    const p = teamData.players.find(player => player._id === event.target.value)
+    if (p) {
+      setTeamData({ ...teamData, captain: p })
+    } else {
+      setTeamData({ ...teamData, captain: team.captain })
+    }
   };
 
   const handleDelete = async () => {
@@ -77,7 +85,7 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
     <Container>
       <Grow in>
         <Grid2 container direction="column" sx={{ gap: 2 }}>
-          <Typography color="primary"><strong>Team code: </strong>{`${team?.teamCode}`}</Typography>
+          <Typography color="primary"><strong>Team code: </strong>{`${team.teamCode}`}</Typography>
           <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
             <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
               <Card sx={{ bgcolor: 'primary.lighter' }}>
@@ -89,29 +97,41 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
                         name="name"
                         variant="outlined"
                         label="Team Name"
-                        value={team.name || ""} // Provide a default empty string
+                        value={teamData.name}
                         onChange={(e) => setTeamData({ ...teamData, name: e.target.value })}
                       />
+                      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel id="select-captain-label">Captain</InputLabel>
+                        <Select
+                          labelId="select-captain-label"
+                          id="select-captain"
+                          value={teamData.captain._id}
+                          onChange={handleCaptainSelectChange}
+                          label="Captain"
+                        >
+                          <MenuItem value={team.captain._id}>
+                            <strong>{team.captain?.name}</strong>
+                          </MenuItem>
 
-                      <TextField
-                        name="captainName"
-                        variant="outlined"
-                        label="Captain"
-                        value={team?.captain?.name || ""} // Provide a default empty string
-                        onChange={(e) => setTeamData({ ...teamData, captain: { ...teamData.captain, name: e.target.value } })}
-                      />
+                          {teamData.players?.length > 0 && teamData.players.map((player) => (
+                            <MenuItem key={player} value={player._id}>
+                              {player.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </Grid2>
                   </Box>
 
                   <Grid2>
                     <Typography variant="h5" sx={{ display: "flex", justifyContent: "center" }}>Players</Typography>
                     <hr sx={{ color: 'primary.lighter' }} />
-                    {team?.players?.length > 0 ? team?.players.map((player, index) => (
+                    {teamData.players?.length > 0 ? teamData.players.map((player, index) => (
                       <Grid2 xs={12} md={6} key={player._id}>
                         <List>
                           <ListItem
                             secondaryAction={
-                              <IconButton edge="end" aria-label="delete" onClick={() => handleRemovePlayer(player._id)}>
+                              <IconButton edge="end" aria-label="delete" onClick={() => handleRemovePlayer(player)}>
                                 <DeleteIcon />
                               </IconButton>
                             }

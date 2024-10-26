@@ -31,7 +31,7 @@ const App = () => {
               <Route path="/auth" exact element={<Container className={classes.mainContainer}><Auth setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container>} />
               <Route path="/my-teams" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Teams setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/create-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
-              <Route path="/my-teams/edit-team/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><EditTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
+              <Route path="/my-teams/:id/edit-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><EditTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/join-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><JoinTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Team setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>}></Route>
             </Routes>

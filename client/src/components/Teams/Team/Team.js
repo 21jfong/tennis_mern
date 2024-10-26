@@ -26,7 +26,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
   }, [id, dispatch]);
 
   const handleEdit = (id) => {
-    navigate(`/my-teams/edit-team/${id}`);
+    navigate(`/my-teams/${id}/edit-team`);
   };
 
   const checkForAlert = (res) => {

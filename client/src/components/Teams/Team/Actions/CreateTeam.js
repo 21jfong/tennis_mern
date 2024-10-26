@@ -8,7 +8,7 @@ import { createTeam } from '../../../../actions/teams';
 
 
 const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
-  const [teamData, setTeamData] = useState({ name: '', captain: null, players: [] });
+  const [teamData, setTeamData] = useState({ name: '', captain: null, players: [], teamCode: '' });
   const dispatch = useDispatch();
   const classes = useStyles();
   const navigate = useNavigate();
