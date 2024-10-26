@@ -57,6 +57,42 @@ export const createTeam = async (req, res) => {
   }
 }
 
+export const editTeam = async (req, res) => {
+  const { id } = req.params;
+  const newTeam = req.body;
+  const userId = req.userId;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('Team not found');
+  if (newTeam.oldCaptain.user_id !== userId) return res.status(404).send('Unauthorized');
+
+  let newPlayers = newTeam.players;
+
+  if (newTeam.captain._id !== newTeam.oldCaptain._id) {
+    newPlayers = newTeam.players.filter(player => player === newTeam.captain);
+    newPlayers.push(newTeam.oldCaptain);
+  }
+
+  const updatedTeam = await Team.findByIdAndUpdate(id, { name: newTeam.name, captain: newTeam.captain, players: newPlayers }, { new: true });
+
+  res.json(updatedTeam);
+}
+
+export const deleteTeam = async (req, res) => {
+  const { id } = req.params;
+  if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });
+
+  try {
+    const team = await Team.findById(id);
+    if (!team) return res.status(404).json({ message: `Team not found` });
+
+    await Team.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Team deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting team", error: error.message });
+  }
+}
+
 export const joinTeam = async (req, res) => {
   const { code } = req.params;
   if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });

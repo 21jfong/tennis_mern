@@ -31,6 +31,16 @@ export const createTeam = (team) => async (dispatch) => {
   }
 }
 
+export const editTeam = (id, team) => async (dispatch) => {
+  try {
+    const { data } = await api.editTeam(id, team);
+
+    dispatch({ type: UPDATE, payload: data })
+  } catch (error) {
+    return error;
+  }
+}
+
 export const deleteTeam = (id) => async (dispatch) => {
   try {
     await api.deleteTeam(id);
