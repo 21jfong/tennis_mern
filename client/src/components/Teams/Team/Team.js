@@ -15,6 +15,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const team = useSelector((state) => state.teams);
+  const user = JSON.parse(localStorage.getItem('profile'));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +69,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
           </Paper>
         </Grid2>
         <Grid2 container justifyContent="flex-end">
-          <Button variant='contained' onClick={() => handleEdit(team._id)}>Edit Team</Button>
+          {team?.captain?.user_id === user.result._id ? <Button variant='contained' onClick={() => handleEdit(team._id)}>Edit Team</Button> : <div></div>}
         </Grid2>
       </Grid2>
     </Grow>

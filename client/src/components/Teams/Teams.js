@@ -80,8 +80,8 @@ const Teams = ({ setIsAlert, setAlertMessage }) => {
             </Box>
           </Paper>
         </Container>
-      </Grid2 >
-    </Grow >
+      </Grid2>
+    </Grow>
   )
 }
 

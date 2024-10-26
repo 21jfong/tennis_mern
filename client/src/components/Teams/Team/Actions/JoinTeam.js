@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { joinTeam } from '../../../../actions/teams';
 
-
 const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
   const [teamCode, setTeamCode] = useState({ code: "" });
   const dispatch = useDispatch();
@@ -26,7 +25,6 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
   };
 
   const checkForAlert = (res) => {
-    console.log(res)
     if (res?.status && res.status !== 200) {
       setAlertMessage(res.response.data.message);
       setIsAlert(true);

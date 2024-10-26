@@ -60,8 +60,10 @@ export const createTeam = async (req, res) => {
 export const editTeam = async (req, res) => {
   const { id } = req.params;
   const newTeam = req.body;
+  const userId = req.userId;
 
   if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('Team not found');
+  if (newTeam.oldCaptain.user_id !== userId) return res.status(404).send('Unauthorized');
 
   let newPlayers = newTeam.players;
 
