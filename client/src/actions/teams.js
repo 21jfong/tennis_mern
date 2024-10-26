@@ -60,3 +60,13 @@ export const joinTeam = (teamCode) => async (dispatch) => {
     return error;
   }
 }
+
+export const removePlayer = (params) => async (dispatch) => {
+  try {
+    await api.removePlayer(params['teamId'], params['playerId']);
+
+    dispatch({ type: UPDATE })
+  } catch (error) {
+    return error;
+  }
+}

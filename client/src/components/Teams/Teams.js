@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-import { getTeams, deleteTeam } from '../../actions/teams';
+import { getTeams } from '../../actions/teams';
 
 const Teams = ({ setIsAlert, setAlertMessage }) => {
   const classes = useStyles();

@@ -62,9 +62,20 @@ export const editTeam = async (req, res) => {
 }
 
 export const deleteTeam = async (req, res) => {
+  const { id } = req.params;
+  if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });
 
+  try {
+    const team = await Team.findById(id);
+    if (!team) return res.status(404).json({ message: `Team not found` });
+
+    await Team.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Team deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting team", error: error.message });
+  }
 }
-
 
 export const joinTeam = async (req, res) => {
   const { code } = req.params;
@@ -83,3 +94,16 @@ export const joinTeam = async (req, res) => {
     return res.status(403).json({ message: "Player is already on the team" });
   }
 }
+
+export const removePlayer = async (req, res) => {
+  const { teamId, playerId } = req.params;
+  if (!req.userId) return res.status(401).json({ message: "Unauthenticated" });
+
+  const team = await Team.findById(teamId);
+  if (!team) return res.status(404).json({ message: `Error finding team` });
+
+  const newPlayers = team.players.filter(player => player._id != playerId)
+  team.players = newPlayers;
+  const updatedTeam = await Team.findByIdAndUpdate(team.id, team, { new: true });
+  res.json(updatedTeam);
+};
