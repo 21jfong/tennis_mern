@@ -50,12 +50,12 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
     const decoded = jwtDecode(res.credential);
 
     try {
-      const result = { ...decoded, googleId: decoded.given_name, imageURL: decoded.picture, firstName: decoded.name.split(" ")[0], lastName: (decoded.name.split(" ")[1] || ""), password: decoded.sub }
+      const result = { email: decoded.email, name: decoded.name }
 
       let response = {}
-      response = dispatch(googlesignin(result, navigate));
+      response = await dispatch(googlesignin(result, navigate));
       checkForAlert(response);
-      dispatch({ type: 'AUTH', data: { result, token: res.credential } });
+      dispatch({ type: 'AUTH', data: { result: { ...response.result, imageURL: decoded.picture }, token: res.credential } });
 
       navigate(-1);
     } catch (error) {
