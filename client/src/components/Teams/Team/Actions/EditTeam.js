@@ -150,7 +150,9 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
               </Card>
             </form>
           </Paper >
-          <Grid2 container justifyContent="flex-end">
+          <Grid2 container justifyContent="flex-end" sx={{ gap: 2 }}>
+            <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
+
             <Button variant='contained' onClick={handleClickOpen} sx={{ '&:hover': { backgroundColor: 'darkred' } }}>Delete Team</Button>
           </Grid2>
         </Grid2>

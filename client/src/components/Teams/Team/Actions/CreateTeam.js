@@ -35,17 +35,25 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
 
   return (
     <Grow in>
-      <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
-        <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-          <Box>
-            <Grid2 container justifyContent={"center"}><Typography variant="h6">Creating a Team</Typography></Grid2>
-            <Grid2 container>
-              <Grid2><TextField name="name" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Name" value={teamData.name} onChange={(e) => setTeamData({ ...teamData, name: e.target.value })} /></Grid2>
-              <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Submit</Button></Grid2>
-            </Grid2>
-          </Box>
-        </form>
-      </Paper>
+      <Grid2 container direction="column" sx={{ gap: 2 }}>
+        <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
+          <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
+            <Box>
+              <Grid2 container justifyContent={"center"}><Typography variant="h6">Creating a Team</Typography></Grid2>
+              <Grid2 container>
+                <Grid2><TextField name="name" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Name" value={teamData.name} onChange={(e) => setTeamData({ ...teamData, name: e.target.value })} /></Grid2>
+                <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Submit</Button></Grid2>
+              </Grid2>
+            </Box>
+          </form>
+        </Paper>
+        <Grid2 container justifyContent="flex-end">
+          <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
+        </Grid2>
+        <Grid2 container justifyContent="flex-end">
+          <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
+        </Grid2>
+      </Grid2>
     </Grow>
   );
 }

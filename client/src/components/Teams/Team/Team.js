@@ -68,9 +68,12 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
             </Card>
           </Paper>
         </Grid2>
-        <Grid2 container justifyContent="flex-end">
-          {team?.captain?.user_id === user.result._id ? <Button variant='contained' onClick={() => handleEdit(team._id)}>Edit Team</Button> : <div></div>}
+        <Grid2 container justifyContent="flex-end" sx={{ gap: 2 }}>
+          <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
+
+          {team?.captain?.user_id === user.result._id ? <Button variant='contained' onClick={() => handleEdit(team._id)}>Edit Team</Button> : null}
         </Grid2>
+
       </Grid2>
     </Grow>
   )
