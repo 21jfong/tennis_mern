@@ -45,24 +45,24 @@ export const signup = async (req, res) => {
 };
 
 export const googlesignin = async (req, res) => {
-  const { email, password, firstName, lastName } = req.body;
+  const { email, name } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    const hashedPassword = await bcrypt.hash(password, 12);
-
+    let result = await User.findOne({ email });
     // check if the google user has a mongo user, if not then create user and player
-    if (!existingUser) {
-      const result = await User.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
-      await Player.create({ name: `${firstName} ${lastName}`, user_id: result._id });
+    if (!result) {
+      result = await User.create({ email, name });
+      await Player.create({ name, user_id: result._id });
     } else {
-      const existingPlayer = await Player.findOne({ user_id: existingUser._id });
+      const existingPlayer = await Player.findOne({ user_id: result._id });
 
       if (!existingPlayer) {
-        await Player.create({ name: `${firstName} ${lastName}`, user_id: existingUser.id });
+        await Player.create({ name, user_id: result.id });
       }
     }
+
+    res.status(200).json({ result });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: "Something went wrong." });
   }
 }
