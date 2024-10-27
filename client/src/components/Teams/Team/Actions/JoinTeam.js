@@ -33,17 +33,23 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
 
   return (
     <Grow in>
-      <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
-        <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-          <Box>
-            <Grid2 container justifyContent={"center"}><Typography variant="h6">Find Team</Typography></Grid2>
-            <Grid2 container>
-              <Grid2><TextField name="code" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Code" value={teamCode.code} onChange={(e) => setTeamCode({ code: e.target.value })} /></Grid2>
-              <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Join</Button></Grid2>
-            </Grid2>
-          </Box>
-        </form>
-      </Paper>
+      <Grid2 container direction="column" sx={{ gap: 2 }}>
+        <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
+          <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
+            <Box>
+              <Grid2 container justifyContent={"center"}><Typography variant="h6">Find Team</Typography></Grid2>
+              <Grid2 container>
+                <Grid2><TextField name="code" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Code" value={teamCode.code} onChange={(e) => setTeamCode({ code: e.target.value })} /></Grid2>
+                <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Join</Button></Grid2>
+              </Grid2>
+            </Box>
+          </form>
+        </Paper>
+
+        <Grid2 container justifyContent="flex-end">
+          <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
+        </Grid2>
+      </Grid2>
     </Grow>
   );
 }
