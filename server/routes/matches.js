@@ -1,10 +1,10 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
-// import { getTeam, getTeams, createTeam, editTeam, deleteTeam, joinTeam } from '../controllers/teams.js';
+import { getMatches } from '../controllers/matches.js';
 
 const router = express.Router();
 
-// router.get('/', auth, getMatches);
+router.get('/my-teams/:id/matches', auth, getMatches);
 // router.get('/:id', auth, getTeam);
 // router.post('/create-team', auth, createTeam);
 // router.patch('/:id/edit-team', auth, editTeam);

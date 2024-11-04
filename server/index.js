@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 // goes to localhost:5000/posts
 app.use('/user', userRoutes);
 app.use('/my-teams', teamsRoutes);
-app.use('/matches', matchesRoutes);
+app.use('/', matchesRoutes);
 
 app.get('/', (req, res) => {
   res.send("hello to tennis api");

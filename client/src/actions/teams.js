@@ -1,11 +1,11 @@
 import * as api from '../api';
-import { FETCH_ALL, FETCH, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
+import { FETCH_ALL_TEAMS, FETCH, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
 
 export const getTeams = (user) => async (dispatch) => {
   try {
     const { data } = await api.fetchTeams(user);
 
-    dispatch({ type: FETCH_ALL, payload: data });
+    dispatch({ type: FETCH_ALL_TEAMS, payload: data });
   } catch (error) {
     return error;
   }
@@ -61,13 +61,3 @@ export const joinTeam = (teamCode) => async (dispatch) => {
   }
 }
 
-export const getMatches = (id) => async (dispatch) => {
-  try {
-    const { data } = await api.getMatches(id);
-
-    console.log(data)
-    dispatch({ type: FETCH_ALL, payload: data });
-  } catch (error) {
-    return error;
-  }
-}

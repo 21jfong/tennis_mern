@@ -7,7 +7,8 @@ import useStyles from './styles';
 import { Card, CardContent, Grid2, Button, Typography, Paper, Grow } from '@mui/material';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import { getTeam, getMatches } from '../../../actions/teams';
+import { getTeam } from '../../../actions/teams';
+import { getMatches } from '../../../actions/matches';
 
 const Team = ({ setIsAlert, setAlertMessage }) => {
   const classes = useStyles();
@@ -66,7 +67,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
               <CardContent>
                 <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>Recent Matches</Typography>
                 <hr />
-                {matches ? matches.map((match, index) => (
+                {matches.length > 0 ? matches.map((match, index) => (
                   <Typography key={match._id}>{match.date}</Typography>
                 )) : <Typography>No Matches Yet</Typography>}
               </CardContent>

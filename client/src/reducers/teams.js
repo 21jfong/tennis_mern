@@ -1,7 +1,7 @@
-import { FETCH, FETCH_ALL, CREATE, UPDATE, DELETE } from "../constants/actionTypes";
+import { FETCH, FETCH_ALL_TEAMS, CREATE, UPDATE, DELETE } from "../constants/actionTypes";
 const reduce = (teams = [], action) => {
   switch (action.type) {
-    case FETCH_ALL:
+    case FETCH_ALL_TEAMS:
       return action.payload;
     case FETCH:
       return action.payload;
