@@ -19,6 +19,7 @@ export const deleteTeam = (teamId) => API.delete(`/my-teams/${teamId}/edit-team`
 export const joinTeam = (teamCode) => API.patch(`/my-teams/join-team/${teamCode}`);
 
 export const getMatches = (teamId) => API.get(`/my-teams/${teamId}/matches`);
+export const createMatch = (newMatch) => API.post('/matches/create-match', newMatch);
 
 export const signIn = (formData) => API.post('/user/signin', formData);
 export const signUp = (formData) => API.post('/user/signup', formData);

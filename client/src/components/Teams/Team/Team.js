@@ -34,6 +34,10 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
     navigate(`/my-teams/${id}/edit-team`);
   };
 
+  const handleCreateMatch = () => {
+    navigate('/matches/create-match');
+  };
+
   const checkForAlert = (res) => {
     if (res?.status && res.status !== 200) {
       setAlertMessage(res.response.data.message);
@@ -48,6 +52,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
           <Grid2 container sx={{ gap: { xs: 1, md: 20 } }}>
             <Typography color="primary"><strong>Team code: </strong>{`${team?.teamCode}`}</Typography>
             <Typography color="primary"><strong>Captain: </strong>{`${team?.captain?.name}`}</Typography>
+            <Button variant='contained' onClick={handleCreateMatch}>Register Match</Button>
           </Grid2>
           <Paper className={classes.paper} sx={{ bgcolor: 'primary.main' }}>
             <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>{team.name}</Typography>

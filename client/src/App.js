@@ -14,6 +14,8 @@ import CreateTeam from './components/Teams/Team/Actions/CreateTeam';
 import EditTeam from './components/Teams/Team/Actions/EditTeam';
 import JoinTeam from './components/Teams/Team/Actions/JoinTeam';
 
+import CreateMatch from './components/Matches/Match/Actions/CreateMatch';
+
 import useStyles from './styles';
 
 const App = () => {
@@ -34,6 +36,8 @@ const App = () => {
               <Route path="/my-teams/:id/edit-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><EditTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/join-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><JoinTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Team setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>}></Route>
+            
+              <Route path="/matches/create-match" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateMatch setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
             </Routes>
             {(isAlert && alertMessage) && (
               <Alert

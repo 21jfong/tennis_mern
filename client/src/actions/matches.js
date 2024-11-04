@@ -1,11 +1,21 @@
 import * as api from '../api';
-import { FETCH_ALL_MATCHES, FETCH, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
+import { MATCH_ACTIONS } from '../constants/actionTypes';
 
 export const getMatches = (id) => async (dispatch) => {
   try {
     const { data } = await api.getMatches(id);
 
-    dispatch({ type: FETCH_ALL_MATCHES, payload: data });
+    dispatch({ type: MATCH_ACTIONS.FETCH_ALL, payload: data });
+  } catch (error) {
+    return error;
+  }
+}
+
+export const createMatch = (match) => async (dispatch) => {
+  try {
+    const { data } = await api.createMatch(match);
+
+    dispatch({ type: MATCH_ACTIONS.CREATE, payload: data })
   } catch (error) {
     return error;
   }

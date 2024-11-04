@@ -1,15 +1,15 @@
-import { FETCH, FETCH_ALL_TEAMS, CREATE, UPDATE, DELETE } from "../constants/actionTypes";
+import { TEAM_ACTIONS } from "../constants/actionTypes";
 const reduce = (teams = [], action) => {
   switch (action.type) {
-    case FETCH_ALL_TEAMS:
+    case TEAM_ACTIONS.FETCH_ALL:
       return action.payload;
-    case FETCH:
+    case TEAM_ACTIONS.FETCH:
       return action.payload;
-    case CREATE:
+    case TEAM_ACTIONS.CREATE:
       return [...teams, action.payload];
-    case UPDATE:
+    case TEAM_ACTIONS.UPDATE:
       return teams.map((team) => team.teamCode === action.payload.teamCode ? action.payload : team);
-    case DELETE:
+    case TEAM_ACTIONS.DELETE:
       return teams.filter((team) => team._id !== action.payload);
     default:
       return teams;
