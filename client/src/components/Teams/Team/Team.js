@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import useStyles from './styles';
 
-import { Card, CardActions, CardContent, Grid2, Button, Typography, Paper, Container, Grow } from '@mui/material';
+import { Card, CardContent, Grid2, Button, Typography, Paper, Grow } from '@mui/material';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import { getTeam } from '../../../actions/teams';
+import { getTeam, getMatches } from '../../../actions/teams';
 
 const Team = ({ setIsAlert, setAlertMessage }) => {
   const classes = useStyles();
@@ -15,12 +15,15 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const team = useSelector((state) => state.teams);
+  const matches = useSelector((state) => state.matches);
   const user = JSON.parse(localStorage.getItem('profile'));
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await dispatch(getTeam(id)); // Await the response from dispatch
-      checkForAlert(response);
+      const team = await dispatch(getTeam(id));
+      const matches = await dispatch(getMatches(id));
+      checkForAlert(team);
+      checkForAlert(matches);
     };
 
     fetchData(); // Call the async function
@@ -63,7 +66,9 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
               <CardContent>
                 <Typography variant="h3" sx={{ padding: { xs: 1, md: 2 }, fontSize: { xs: '1.5rem', md: '2rem' } }}>Recent Matches</Typography>
                 <hr />
-                <Typography>No Matches Yet</Typography>
+                {matches ? matches.map((match, index) => (
+                  <Typography key={match._id}>{match.date}</Typography>
+                )) : <Typography>No Matches Yet</Typography>}
               </CardContent>
             </Card>
           </Paper>

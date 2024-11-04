@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import useStyles from './styles'
-import { Button, Container, Grid2, Link, Typography, Grow, Card, Paper, Box, CardContent } from '@mui/material'
+import { Button, Container, Grid2, Link, Typography, Grow, Card, Paper, Box } from '@mui/material'
 import { Link as React_Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import PendingIcon from '@mui/icons-material/Pending';
 
 import { getTeams } from '../../actions/teams';
 

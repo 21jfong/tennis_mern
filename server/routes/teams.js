@@ -1,6 +1,6 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
-import { getTeam, getTeams, createTeam, editTeam, deleteTeam, joinTeam } from '../controllers/teams.js';
+import { getTeam, getTeams, createTeam, editTeam, deleteTeam, joinTeam, getMatches } from '../controllers/teams.js';
 
 const router = express.Router();
 
@@ -10,5 +10,6 @@ router.post('/create-team', auth, createTeam);
 router.patch('/:id/edit-team', auth, editTeam);
 router.delete('/:id/edit-team', auth, deleteTeam);
 router.patch('/join-team/:code', auth, joinTeam);
+router.get('/:id', auth, getMatches);
 
 export default router;

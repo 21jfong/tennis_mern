@@ -60,3 +60,14 @@ export const joinTeam = (teamCode) => async (dispatch) => {
     return error;
   }
 }
+
+export const getMatches = (id) => async (dispatch) => {
+  try {
+    const { data } = await api.getMatches(id);
+
+    console.log(data)
+    dispatch({ type: FETCH_ALL, payload: data });
+  } catch (error) {
+    return error;
+  }
+}

@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 
 import userRoutes from "./routes/users.js"
 import teamsRoutes from "./routes/teams.js"
+import matchesRoutes from "./routes/matches.js"
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,7 @@ app.use(cors(corsOptions));
 // goes to localhost:5000/posts
 app.use('/user', userRoutes);
 app.use('/my-teams', teamsRoutes);
+app.use('/matches', matchesRoutes);
 
 app.get('/', (req, res) => {
   res.send("hello to tennis api");
