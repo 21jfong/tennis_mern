@@ -1,27 +1,89 @@
-import React, { useState } from 'react'
-import { TextField, Button, Typography, Paper, Grid2, Box, Grow } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import useStyles from '../styles';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Grid2,
+  Box,
+  Grow,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import useStyles from "../styles";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { createMatch } from '../../../../actions/matches';
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import Checkbox from "@mui/material/Checkbox";
+import Select from "@mui/material/Select";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+
+import { createMatch } from "../../../../actions/matches";
+import { getTeam } from "../../../../actions/teams";
 
 const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
-  const [matchData, setMatchData] = useState({ teams: [], players: [], score: '' });
+  const [matchData, setMatchData] = useState({
+    teams: [],
+    players: [],
+    score: "",
+    date: null,
+  });
+  const [doubles, setDoubles] = React.useState(false);
+  const team = useSelector((state) => state.teams);
+  const [players, setPlayers] = React.useState(team.players);
+  const [selectedPlayers, setSelectedPlayers] = React.useState([]);
+  const { id } = useParams();
   const dispatch = useDispatch();
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const clear = () => {
-    setMatchData({ teams: [], players: [], score: '' });
-  };
+  const winnerIndex = 0;
+  const winnerTwoIndex = 1;
+  const loserIndex = doubles ? 2 : 1;
+  const loserTwoIndex = 3;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const team = await dispatch(getTeam(id));
+      checkForAlert(team);
+    };
+
+    fetchData();
+  }, [id, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await dispatch(createMatch({}));
     checkForAlert(response);
     navigate(-1);
-    clear();
+  };
+
+  const handleSelectChange = (event, index) => {
+    let newPlayers = [...matchData.players];
+    newPlayers[index] = event.target.value;
+    let shownPlayers = players.filter((player) => !newPlayers.includes(player));
+    const selected = team.players.filter(
+      (player) =>
+        !shownPlayers.some((shownPlayer) => shownPlayer._id === player._id)
+    );
+    setSelectedPlayers(selected);
+    setMatchData({ ...matchData, players: newPlayers });
+  };
+
+  const handleDoublesChange = (event) => {
+    setDoubles(event.target.checked);
+    const newPlayers = matchData.players.slice(0, 2);
+    setSelectedPlayers(newPlayers);
+    setMatchData({ ...matchData, players: newPlayers });
+  };
+
+  const handleIsDisabled = (player) => {
+    return selectedPlayers.some((p) => p._id === player._id);
   };
 
   const checkForAlert = (res) => {
@@ -29,28 +91,184 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
       setAlertMessage(res.response.data.message);
       setIsAlert(true);
     }
-  }
+  };
 
   return (
-    <Grow in>
-      <Grid2 container direction="column" sx={{ gap: 2 }}>
-        <Paper sx={{ backgroundColor: (theme) => theme.palette.primary.main }} className={classes.paper}>
-          <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-            <Box>
-              <Grid2 container justifyContent={"center"}><Typography variant="h6">Registering Match</Typography></Grid2>
-              <Grid2 container>
-                <Grid2><TextField name="name" sx={{ backgroundColor: (theme) => theme.palette.primary.main, height: 56 }} variant="outlined" label="Team Name" value={matchData.name} onChange={(e) => setMatchData({ ...matchData, name: e.target.value })} /></Grid2>
-                <Grid2 alignItems="center" display="flex"><Button className={classes.buttonSubmit} variant="contained" color="secondary" type="submit">Submit</Button></Grid2>
-              </Grid2>
-            </Box>
-          </form>
-        </Paper>
-        <Grid2 container justifyContent="flex-end">
-          <Button variant='contained' onClick={() => navigate(-1)}>Back</Button>
-        </Grid2>
-      </Grid2>
-    </Grow>
-  );
-}
+    <Box>
+      {players ? (
+        <Grow in>
+          <Grid2 container direction="column" sx={{ gap: 2 }}>
+            <Paper
+              sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
+              className={classes.paper}
+            >
+              <form
+                autoComplete="off"
+                noValidate
+                className={`${classes.root} ${classes.form}`}
+                onSubmit={handleSubmit}
+              >
+                <Box>
+                  <Grid2 container justifyContent={"center"}>
+                    <Typography variant="h6">Registering Match</Typography>
+                  </Grid2>
+                  <Grid2 container direction="column">
+                    <Grid2>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateTimePicker
+                          label="Match date and time"
+                          defaultValue={dayjs()}
+                          onChange={(e) =>
+                            setMatchData({ ...matchData, date: e })
+                          }
+                        />
+                      </LocalizationProvider>
+                    </Grid2>
 
-export default CreateMatch
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={doubles}
+                          label="Doubles"
+                          onChange={handleDoublesChange}
+                          inputProps={{ "aria-label": "controlled" }}
+                        />
+                      }
+                      label="Doubles"
+                    />
+
+                    <Grid2>
+                      <FormControl sx={{ m: 1, minWidth: 100 }}>
+                        <InputLabel>Winner</InputLabel>
+                        <Select
+                          value={matchData.players[winnerIndex] || ""}
+                          onChange={(e) => handleSelectChange(e, winnerIndex)}
+                          autoWidth
+                          label="Winner"
+                        >
+                          {players?.length > 0
+                            ? players.map((player) => (
+                                <MenuItem
+                                  key={player._id}
+                                  value={player}
+                                  disabled={handleIsDisabled(player)}
+                                >
+                                  {player.name}
+                                </MenuItem>
+                              ))
+                            : null}
+                        </Select>
+                      </FormControl>
+
+                      {doubles ? (
+                        <FormControl sx={{ m: 1, minWidth: 100 }}>
+                          <InputLabel id="winner-two-label">
+                            Winner 2
+                          </InputLabel>
+                          <Select
+                            value={matchData.players[winnerTwoIndex] || ""}
+                            onChange={(e) => handleSelectChange(e, winnerIndex)}
+                            autoWidth
+                            label="Winner 2"
+                          >
+                            {players?.length > 0
+                              ? players.map((player) => (
+                                  <MenuItem
+                                    key={player._id}
+                                    value={player}
+                                    disabled={handleIsDisabled(player)}
+                                  >
+                                    {player.name}
+                                  </MenuItem>
+                                ))
+                              : null}
+                          </Select>
+                        </FormControl>
+                      ) : null}
+
+                      <FormControl sx={{ m: 1, minWidth: 100 }}>
+                        <InputLabel id="loser-select-label">Loser</InputLabel>
+                        <Select
+                          value={matchData.players[loserIndex] || ""}
+                          onChange={(e) => handleSelectChange(e, loserIndex)}
+                          autoWidth
+                          label="Loser"
+                        >
+                          {players?.length > 0
+                            ? players.map((player) => (
+                                <MenuItem
+                                  key={player._id}
+                                  value={player}
+                                  disabled={handleIsDisabled(player)}
+                                >
+                                  {player.name}
+                                </MenuItem>
+                              ))
+                            : null}
+                        </Select>
+                      </FormControl>
+
+                      {doubles ? (
+                        <FormControl sx={{ m: 1, minWidth: 100 }}>
+                          <InputLabel id="loser-two-select-label">
+                            Loser 2
+                          </InputLabel>
+                          <Select
+                            value={matchData.players[loserTwoIndex] || ""}
+                            onChange={(e) =>
+                              handleSelectChange(e, loserTwoIndex)
+                            }
+                            autoWidth
+                            label="Loser 2"
+                          >
+                            {players?.length > 0
+                              ? players.map((player) => (
+                                  <MenuItem
+                                    key={player._id}
+                                    value={player}
+                                    disabled={handleIsDisabled(player)}
+                                  >
+                                    {player.name}
+                                  </MenuItem>
+                                ))
+                              : null}
+                          </Select>
+                        </FormControl>
+                      ) : null}
+                    </Grid2>
+                  </Grid2>
+
+                  <Button
+                    className={classes.buttonSubmit}
+                    variant="contained"
+                    color="secondary"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </form>
+            </Paper>
+            <Grid2 container justifyContent="flex-end">
+              <Button variant="contained" onClick={() => navigate(-1)}>
+                Back
+              </Button>
+            </Grid2>
+          </Grid2>
+        </Grow>
+      ) : (
+        <Box>
+          <Typography>
+            Something went wrong, please go back to the previous page and try
+            again.
+          </Typography>
+          <Button variant="contained" onClick={() => navigate(-1)}>
+            Back
+          </Button>
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+export default CreateMatch;

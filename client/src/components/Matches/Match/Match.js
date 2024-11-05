@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Match = ({ setIsAlert, setAlertMessage }) => {
-  return (
-    <div>
-      Match
-    </div>
-  )
-}
+  return <div>Match</div>;
+};
 
-export default Match
+export default Match;

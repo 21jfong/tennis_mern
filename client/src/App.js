@@ -37,7 +37,7 @@ const App = () => {
               <Route path="/my-teams/join-team" exact element={<ProtectedRoute><Container className={classes.mainContainer}><JoinTeam setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/my-teams/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Team setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>}></Route>
             
-              <Route path="/matches/create-match" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateMatch setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
+              <Route path="/:id/matches/create-match" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateMatch setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
             </Routes>
             {(isAlert && alertMessage) && (
               <Alert
