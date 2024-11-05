@@ -7,6 +7,7 @@ import {
   Grid2,
   Box,
   Grow,
+  Card,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import useStyles from "../styles";
@@ -125,7 +126,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                 className={`${classes.root} ${classes.form}`}
                 onSubmit={handleSubmit}
               >
-                <Box>
+                <Card sx={{ bgcolor: "primary.lighter", padding: 2 }}>
                   <Grid2 container justifyContent={"center"}>
                     <Typography variant="h6">Registering Match</Typography>
                   </Grid2>
@@ -140,7 +141,9 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                           }
                         />
                       </LocalizationProvider>
+                    </Grid2>
 
+                    <Grid2 container justifyContent={"center"}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -279,11 +282,12 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                       variant="contained"
                       color="secondary"
                       type="submit"
+                      sx={{ m: 2 }}
                     >
                       Submit
                     </Button>
                   </Grid2>
-                </Box>
+                </Card>
               </form>
             </Paper>
             <Grid2 container justifyContent="flex-end">

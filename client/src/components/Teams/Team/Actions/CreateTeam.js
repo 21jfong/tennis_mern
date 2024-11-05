@@ -5,7 +5,7 @@ import {
   Typography,
   Paper,
   Grid2,
-  Box,
+  Card,
   Grow,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -58,7 +58,7 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
             className={`${classes.root} ${classes.form}`}
             onSubmit={handleSubmit}
           >
-            <Box>
+            <Card sx={{ bgcolor: "primary.lighter", padding: 2 }}>
               <Grid2 container justifyContent={"center"}>
                 <Typography variant="h6">Creating a Team</Typography>
               </Grid2>
@@ -66,10 +66,7 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
                 <Grid2>
                   <TextField
                     name="name"
-                    sx={{
-                      backgroundColor: (theme) => theme.palette.primary.main,
-                      height: 56,
-                    }}
+                    sx={{ height: 56 }}
                     variant="outlined"
                     label="Team Name"
                     value={teamData.name}
@@ -89,7 +86,7 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
                   </Button>
                 </Grid2>
               </Grid2>
-            </Box>
+            </Card>
           </form>
         </Paper>
         <Grid2 container justifyContent="flex-end">

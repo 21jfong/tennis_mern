@@ -62,19 +62,33 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
         sx={{ gap: 2 }}
       >
         <Grid2>
-          <Grid2 container sx={{ gap: { xs: 1, md: 20 } }}>
-            <Typography color="primary">
-              <strong>Team code: </strong>
-              {`${team?.teamCode}`}
-            </Typography>
-            <Typography color="primary">
-              <strong>Captain: </strong>
-              {`${team?.captain?.name}`}
-            </Typography>
-            <Button variant="contained" onClick={() => handleCreateMatch(id)}>
-              Register Match
-            </Button>
+          <Grid2
+            container
+            direction={{ xs: "column", md: "row" }}
+            justifyContent={{ xs: "flex-start", md: "space-between" }}
+            alignItems={{ md: "center" }}
+            sx={{ gap: { md: 15 }, padding: 2 }}
+          >
+            <Grid2 xs="auto">
+              <Typography color="primary">
+                <strong>Team code: </strong>
+                {`${team?.teamCode}`}
+              </Typography>
+            </Grid2>
+            <Grid2 xs="auto">
+              <Typography color="primary">
+                <strong>Captain: </strong>
+                {`${team?.captain?.name}`}
+              </Typography>
+            </Grid2>
+
+            <Grid2 xs="auto" sx={{ mt: { xs: 2, md: 0 }, ml: "auto" }}>
+              <Button variant="contained" onClick={() => handleCreateMatch(id)}>
+                Register Match
+              </Button>
+            </Grid2>
           </Grid2>
+
           <Paper className={classes.paper} sx={{ bgcolor: "primary.main" }}>
             <Typography
               variant="h3"
