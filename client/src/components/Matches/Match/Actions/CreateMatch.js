@@ -37,6 +37,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const team = useSelector((state) => state.teams);
   const [players, setPlayers] = React.useState(team.players);
   const [selectedPlayers, setSelectedPlayers] = React.useState([]);
+  const [error, setError] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -46,6 +47,8 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const winnerTwoIndex = 1;
   const loserIndex = doubles ? 2 : 1;
   const loserTwoIndex = 3;
+  const scoreRegex =
+    /^([0-8]-[0-8])\s([0-8]-[0-8])(\s(1[0-9]|[2-9][0-9]|[1-9]\d?)-[1-9]\d?)?$/; // Matches the format "2-6 2-6 16-14"
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +58,17 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
     fetchData();
   }, [id, dispatch]);
+
+  const handleScoreChange = (e) => {
+    const value = e.target.value;
+    setMatchData({ ...matchData, score: value });
+
+    if (scoreRegex.test(value)) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,13 +91,16 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
   const handleDoublesChange = (event) => {
     setDoubles(event.target.checked);
-    const newPlayers = matchData.players.slice(0, 2);
+    const newPlayers = [
+      matchData.players[0],
+      ...(doubles ? [matchData.players[2]] : [undefined, matchData.players[1]]),
+    ];
     setSelectedPlayers(newPlayers);
     setMatchData({ ...matchData, players: newPlayers });
   };
 
   const handleIsDisabled = (player) => {
-    return selectedPlayers.some((p) => p._id === player._id);
+    return selectedPlayers.some((p) => p?._id === player._id);
   };
 
   const checkForAlert = (res) => {
@@ -113,7 +130,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                     <Typography variant="h6">Registering Match</Typography>
                   </Grid2>
                   <Grid2 container direction="column">
-                    <Grid2>
+                    <Grid2 container justifyContent={"center"}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                           label="Match date and time"
@@ -123,53 +140,29 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                           }
                         />
                       </LocalizationProvider>
+
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={doubles}
+                            label="Doubles"
+                            onChange={handleDoublesChange}
+                            inputProps={{ "aria-label": "controlled" }}
+                          />
+                        }
+                        label="Doubles"
+                      />
                     </Grid2>
 
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={doubles}
-                          label="Doubles"
-                          onChange={handleDoublesChange}
-                          inputProps={{ "aria-label": "controlled" }}
-                        />
-                      }
-                      label="Doubles"
-                    />
-
-                    <Grid2>
-                      <FormControl sx={{ m: 1, minWidth: 100 }}>
-                        <InputLabel>Winner</InputLabel>
-                        <Select
-                          value={matchData.players[winnerIndex] || ""}
-                          onChange={(e) => handleSelectChange(e, winnerIndex)}
-                          autoWidth
-                          label="Winner"
-                        >
-                          {players?.length > 0
-                            ? players.map((player) => (
-                                <MenuItem
-                                  key={player._id}
-                                  value={player}
-                                  disabled={handleIsDisabled(player)}
-                                >
-                                  {player.name}
-                                </MenuItem>
-                              ))
-                            : null}
-                        </Select>
-                      </FormControl>
-
-                      {doubles ? (
+                    <Grid2 container sx={{ gap: { md: 5 } }}>
+                      <Grid2>
                         <FormControl sx={{ m: 1, minWidth: 100 }}>
-                          <InputLabel id="winner-two-label">
-                            Winner 2
-                          </InputLabel>
+                          <InputLabel>Winner</InputLabel>
                           <Select
-                            value={matchData.players[winnerTwoIndex] || ""}
+                            value={matchData.players[winnerIndex] || ""}
                             onChange={(e) => handleSelectChange(e, winnerIndex)}
                             autoWidth
-                            label="Winner 2"
+                            label="Winner"
                           >
                             {players?.length > 0
                               ? players.map((player) => (
@@ -184,42 +177,44 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                               : null}
                           </Select>
                         </FormControl>
-                      ) : null}
 
-                      <FormControl sx={{ m: 1, minWidth: 100 }}>
-                        <InputLabel id="loser-select-label">Loser</InputLabel>
-                        <Select
-                          value={matchData.players[loserIndex] || ""}
-                          onChange={(e) => handleSelectChange(e, loserIndex)}
-                          autoWidth
-                          label="Loser"
-                        >
-                          {players?.length > 0
-                            ? players.map((player) => (
-                                <MenuItem
-                                  key={player._id}
-                                  value={player}
-                                  disabled={handleIsDisabled(player)}
-                                >
-                                  {player.name}
-                                </MenuItem>
-                              ))
-                            : null}
-                        </Select>
-                      </FormControl>
+                        {doubles ? (
+                          <FormControl sx={{ m: 1, minWidth: 100 }}>
+                            <InputLabel id="winner-two-label">
+                              Winner
+                            </InputLabel>
+                            <Select
+                              value={matchData.players[winnerTwoIndex] || ""}
+                              onChange={(e) =>
+                                handleSelectChange(e, winnerTwoIndex)
+                              }
+                              autoWidth
+                              label="Winner"
+                            >
+                              {players?.length > 0
+                                ? players.map((player) => (
+                                    <MenuItem
+                                      key={player._id}
+                                      value={player}
+                                      disabled={handleIsDisabled(player)}
+                                    >
+                                      {player.name}
+                                    </MenuItem>
+                                  ))
+                                : null}
+                            </Select>
+                          </FormControl>
+                        ) : null}
+                      </Grid2>
 
-                      {doubles ? (
+                      <Grid2>
                         <FormControl sx={{ m: 1, minWidth: 100 }}>
-                          <InputLabel id="loser-two-select-label">
-                            Loser 2
-                          </InputLabel>
+                          <InputLabel id="loser-select-label">Loser</InputLabel>
                           <Select
-                            value={matchData.players[loserTwoIndex] || ""}
-                            onChange={(e) =>
-                              handleSelectChange(e, loserTwoIndex)
-                            }
+                            value={matchData.players[loserIndex] || ""}
+                            onChange={(e) => handleSelectChange(e, loserIndex)}
                             autoWidth
-                            label="Loser 2"
+                            label="Loser"
                           >
                             {players?.length > 0
                               ? players.map((player) => (
@@ -234,18 +229,60 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                               : null}
                           </Select>
                         </FormControl>
-                      ) : null}
+
+                        {doubles ? (
+                          <FormControl sx={{ m: 1, minWidth: 100 }}>
+                            <InputLabel id="loser-two-select-label">
+                              Loser
+                            </InputLabel>
+                            <Select
+                              value={matchData.players[loserTwoIndex] || ""}
+                              onChange={(e) =>
+                                handleSelectChange(e, loserTwoIndex)
+                              }
+                              autoWidth
+                              label="Loser"
+                            >
+                              {players?.length > 0
+                                ? players.map((player) => (
+                                    <MenuItem
+                                      key={player._id}
+                                      value={player}
+                                      disabled={handleIsDisabled(player)}
+                                    >
+                                      {player.name}
+                                    </MenuItem>
+                                  ))
+                                : null}
+                            </Select>
+                          </FormControl>
+                        ) : null}
+                      </Grid2>
                     </Grid2>
+
+                    <TextField
+                      name="Score"
+                      variant="outlined"
+                      label="Score (2-6 2-6)"
+                      value={matchData.score}
+                      onChange={handleScoreChange}
+                      error={error}
+                      helperText={
+                        error ? "Format must be 'X-Y X-Y' or 'X-Y X-Y X-Y'" : ""
+                      }
+                    />
                   </Grid2>
 
-                  <Button
-                    className={classes.buttonSubmit}
-                    variant="contained"
-                    color="secondary"
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
+                  <Grid2 container justifyContent="flex-end">
+                    <Button
+                      className={classes.buttonSubmit}
+                      variant="contained"
+                      color="secondary"
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </Grid2>
                 </Box>
               </form>
             </Paper>
