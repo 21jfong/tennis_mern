@@ -1,8 +1,19 @@
+// actionTypes.js
+
+const createActionTypes = (base) => ({
+  CREATE: `${base}_CREATE`,
+  UPDATE: `${base}_UPDATE`,
+  DELETE: `${base}_DELETE`,
+  FETCH_ALL: `${base}_FETCH_ALL`,
+  FETCH: `${base}_FETCH`,
+});
+
+// Auth Actions
 export const AUTH = 'AUTH';
 export const LOGOUT = 'LOGOUT';
 
-export const CREATE = 'CREATE';
-export const UPDATE = 'UPDATE';
-export const DELETE = 'DELETE';
-export const FETCH_ALL = 'FETCH_ALL';
-export const FETCH = 'FETCH';
+// Team Actions
+export const TEAM_ACTIONS = createActionTypes('TEAM');
+
+// Match Actions
+export const MATCH_ACTIONS = createActionTypes('MATCH');
