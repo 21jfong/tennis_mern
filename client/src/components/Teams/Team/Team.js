@@ -67,7 +67,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
             direction={{ xs: "column", md: "row" }}
             justifyContent={{ xs: "flex-start", md: "space-between" }}
             alignItems={{ md: "center" }}
-            sx={{ gap: { md: 15 }, padding: 2 }}
+            sx={{ gap: { md: 15 }, marginBottom: 2 }}
           >
             <Grid2 xs="auto">
               <Typography color="primary">
@@ -82,7 +82,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
               </Typography>
             </Grid2>
 
-            <Grid2 xs="auto" sx={{ mt: { xs: 2, md: 0 }, ml: "auto" }}>
+            <Grid2 xs="auto" sx={{ mt: { xs: 1, md: 0 }, ml: "auto" }}>
               <Button variant="contained" onClick={() => handleCreateMatch(id)}>
                 Register Match
               </Button>

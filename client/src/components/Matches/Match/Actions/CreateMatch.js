@@ -18,14 +18,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import Checkbox from "@mui/material/Checkbox";
-import Select from "@mui/material/Select";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 
 import { createMatch } from "../../../../actions/matches";
 import { getTeam } from "../../../../actions/teams";
+
+import SelectFormControl from "./SelectFormControl";
 
 const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const [matchData, setMatchData] = useState({
@@ -73,9 +71,34 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await dispatch(createMatch({}));
+
+    if (invalidForm()) return;
+
+    const response = await dispatch(createMatch(matchData));
     checkForAlert(response);
     navigate(-1);
+  };
+
+  const invalidForm = () => {
+    if (!matchData.players[winnerIndex]) {
+      setAlertMessage("Please select a winner.");
+      setIsAlert(true);
+      return true;
+    }
+
+    if (!matchData.players[loserIndex]) {
+      setAlertMessage("Please select a loser.");
+      setIsAlert(true);
+      return true;
+    }
+
+    if (!scoreRegex.test(matchData.score)) {
+      setAlertMessage("Please enter a score.");
+      setIsAlert(true);
+      return true;
+    }
+
+    return false;
   };
 
   const handleSelectChange = (event, index) => {
@@ -159,107 +182,47 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
                     <Grid2 container sx={{ gap: { md: 5 } }}>
                       <Grid2>
-                        <FormControl sx={{ m: 1, minWidth: 100 }}>
-                          <InputLabel>Winner</InputLabel>
-                          <Select
-                            value={matchData.players[winnerIndex] || ""}
-                            onChange={(e) => handleSelectChange(e, winnerIndex)}
-                            autoWidth
-                            label="Winner"
-                          >
-                            {players?.length > 0
-                              ? players.map((player) => (
-                                  <MenuItem
-                                    key={player._id}
-                                    value={player}
-                                    disabled={handleIsDisabled(player)}
-                                  >
-                                    {player.name}
-                                  </MenuItem>
-                                ))
-                              : null}
-                          </Select>
-                        </FormControl>
+                        <SelectFormControl
+                          label="Winner"
+                          value={matchData.players[winnerIndex]}
+                          onChange={(e) => handleSelectChange(e, winnerIndex)}
+                          players={players}
+                          handleIsDisabled={handleIsDisabled}
+                        />
 
-                        {doubles ? (
-                          <FormControl sx={{ m: 1, minWidth: 100 }}>
-                            <InputLabel id="winner-two-label">
-                              Winner
-                            </InputLabel>
-                            <Select
-                              value={matchData.players[winnerTwoIndex] || ""}
-                              onChange={(e) =>
-                                handleSelectChange(e, winnerTwoIndex)
-                              }
-                              autoWidth
-                              label="Winner"
-                            >
-                              {players?.length > 0
-                                ? players.map((player) => (
-                                    <MenuItem
-                                      key={player._id}
-                                      value={player}
-                                      disabled={handleIsDisabled(player)}
-                                    >
-                                      {player.name}
-                                    </MenuItem>
-                                  ))
-                                : null}
-                            </Select>
-                          </FormControl>
-                        ) : null}
+                        {doubles && (
+                          <SelectFormControl
+                            label="Winner"
+                            value={matchData.players[winnerTwoIndex]}
+                            onChange={(e) =>
+                              handleSelectChange(e, winnerTwoIndex)
+                            }
+                            players={players}
+                            handleIsDisabled={handleIsDisabled}
+                          />
+                        )}
                       </Grid2>
 
                       <Grid2>
-                        <FormControl sx={{ m: 1, minWidth: 100 }}>
-                          <InputLabel id="loser-select-label">Loser</InputLabel>
-                          <Select
-                            value={matchData.players[loserIndex] || ""}
-                            onChange={(e) => handleSelectChange(e, loserIndex)}
-                            autoWidth
-                            label="Loser"
-                          >
-                            {players?.length > 0
-                              ? players.map((player) => (
-                                  <MenuItem
-                                    key={player._id}
-                                    value={player}
-                                    disabled={handleIsDisabled(player)}
-                                  >
-                                    {player.name}
-                                  </MenuItem>
-                                ))
-                              : null}
-                          </Select>
-                        </FormControl>
+                        <SelectFormControl
+                          label="Loser"
+                          value={matchData.players[loserIndex]}
+                          onChange={(e) => handleSelectChange(e, loserIndex)}
+                          players={players}
+                          handleIsDisabled={handleIsDisabled}
+                        />
 
-                        {doubles ? (
-                          <FormControl sx={{ m: 1, minWidth: 100 }}>
-                            <InputLabel id="loser-two-select-label">
-                              Loser
-                            </InputLabel>
-                            <Select
-                              value={matchData.players[loserTwoIndex] || ""}
-                              onChange={(e) =>
-                                handleSelectChange(e, loserTwoIndex)
-                              }
-                              autoWidth
-                              label="Loser"
-                            >
-                              {players?.length > 0
-                                ? players.map((player) => (
-                                    <MenuItem
-                                      key={player._id}
-                                      value={player}
-                                      disabled={handleIsDisabled(player)}
-                                    >
-                                      {player.name}
-                                    </MenuItem>
-                                  ))
-                                : null}
-                            </Select>
-                          </FormControl>
-                        ) : null}
+                        {doubles && (
+                          <SelectFormControl
+                            label="Loser"
+                            value={matchData.players[loserTwoIndex]}
+                            onChange={(e) =>
+                              handleSelectChange(e, loserTwoIndex)
+                            }
+                            players={players}
+                            handleIsDisabled={handleIsDisabled}
+                          />
+                        )}
                       </Grid2>
                     </Grid2>
 
@@ -273,6 +236,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                       helperText={
                         error ? "Format must be 'X-Y X-Y' or 'X-Y X-Y X-Y'" : ""
                       }
+                      required
                     />
                   </Grid2>
 
