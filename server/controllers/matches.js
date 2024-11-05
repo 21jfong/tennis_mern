@@ -20,4 +20,15 @@ export const getMatches = async (req, res) => {
   }
 };
 
-export const createMatch = async (req, res) => {};
+export const createMatch = async (req, res) => {
+  const match = req.body;
+
+  const newMatch = new Match({ ...match });
+
+  try {
+    await newMatch.save();
+    res.status(201).json(newMatch);
+  } catch (error) {
+    res.status(409).json({ message: "Error saving match" });
+  }
+};

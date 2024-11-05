@@ -142,7 +142,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                 <hr />
                 {matches.length > 0 ? (
                   matches.map((match, index) => (
-                    <Typography key={match._id}>{match.date}</Typography>
+                    <Typography key={match._id}>{match.score}</Typography>
                   ))
                 ) : (
                   <Typography>No Matches Yet</Typography>

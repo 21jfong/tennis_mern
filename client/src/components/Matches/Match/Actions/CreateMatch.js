@@ -30,7 +30,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
     teams: [],
     players: [],
     score: "",
-    date: null,
+    date: dayjs(),
   });
   const [doubles, setDoubles] = React.useState(false);
   const team = useSelector((state) => state.teams);
@@ -47,7 +47,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const loserIndex = doubles ? 2 : 1;
   const loserTwoIndex = 3;
   const scoreRegex =
-    /^([0-8]-[0-8])\s([0-8]-[0-8])(\s(1[0-9]|[2-9][0-9]|[1-9]\d?)-[1-9]\d?)?$/; // Matches the format "2-6 2-6 16-14"
+    /^([0-8])-[0-8](?:\s+[\d+-]+)?(?:\s+[0-8]-[0-8](?:\s+\d+-\d+)?)$/;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,12 +61,6 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const handleScoreChange = (e) => {
     const value = e.target.value;
     setMatchData({ ...matchData, score: value });
-
-    if (scoreRegex.test(value)) {
-      setError(false);
-    } else {
-      setError(true);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -74,7 +68,9 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
     if (invalidForm()) return;
 
-    const response = await dispatch(createMatch(matchData));
+    const response = await dispatch(
+      createMatch({ ...matchData, teams: [team] })
+    );
     checkForAlert(response);
     navigate(-1);
   };
@@ -93,8 +89,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
     }
 
     if (!scoreRegex.test(matchData.score)) {
-      setAlertMessage("Please enter a score.");
-      setIsAlert(true);
+      setError(true);
       return true;
     }
 
@@ -158,7 +153,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                           label="Match date and time"
-                          defaultValue={dayjs()}
+                          defaultValue={matchData.date}
                           onChange={(e) =>
                             setMatchData({ ...matchData, date: e })
                           }
@@ -229,12 +224,12 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
                     <TextField
                       name="Score"
                       variant="outlined"
-                      label="Score (2-6 2-6)"
+                      label="Score (6-2 6-2)"
                       value={matchData.score}
                       onChange={handleScoreChange}
                       error={error}
                       helperText={
-                        error ? "Format must be 'X-Y X-Y' or 'X-Y X-Y X-Y'" : ""
+                        error ? "Must have 2+ sets and optional tiebreaker" : ""
                       }
                       required
                     />
