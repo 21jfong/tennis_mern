@@ -1,5 +1,8 @@
-import { AUTH } from '../constants/actionTypes';
-import * as api from '../api/index.js';
+import { AUTH } from "../constants/actionTypes";
+import * as api from "../api/index.js";
+
+const isHomePageOrExternal =
+  !document.referrer || !document.referrer.includes(window.location.hostname);
 
 export const signin = (formData, navigate) => async (dispatch) => {
   try {
@@ -7,11 +10,15 @@ export const signin = (formData, navigate) => async (dispatch) => {
 
     dispatch({ type: AUTH, data });
 
-    navigate(-1);
+    if (!isHomePageOrExternal) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
   } catch (error) {
-    return error
+    return error;
   }
-}
+};
 
 export const signup = (formData, navigate) => async (dispatch) => {
   try {
@@ -19,12 +26,16 @@ export const signup = (formData, navigate) => async (dispatch) => {
 
     dispatch({ type: AUTH, data });
 
-    navigate(-1);
+    if (!isHomePageOrExternal) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
     return data;
   } catch (error) {
-    return error
+    return error;
   }
-}
+};
 
 export const googlesignin = (formData, navigate) => async (dispatch) => {
   try {
@@ -32,9 +43,13 @@ export const googlesignin = (formData, navigate) => async (dispatch) => {
 
     dispatch({ type: AUTH, data });
 
-    navigate(-1);
+    if (!isHomePageOrExternal) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
     return data;
   } catch (error) {
-    return error
+    return error;
   }
-}
+};
