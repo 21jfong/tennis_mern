@@ -17,7 +17,7 @@ export const getMatches = async (req, res) => {
       "players"
     );
 
-    res.status(200).json(matches);
+    res.status(200).json(matches.reverse());
   } catch (error) {
     res.status(404).json({ message: "Error finding matches" });
   }
@@ -27,7 +27,11 @@ export const createMatch = async (req, res) => {
   const match = req.body;
 
   try {
-    const newMatch = new Match({ ...match, players });
+    const newMatch = new Match({
+      ...match,
+      players: match.players,
+      score: match.score.split(" ").join(", "),
+    });
 
     await newMatch.save();
     res.status(201).json(newMatch);

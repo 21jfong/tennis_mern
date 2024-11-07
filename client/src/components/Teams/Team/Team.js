@@ -138,48 +138,67 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                     Recent Matches
                   </Typography>
                   <hr />
-                  <Grid2 container sx={{ gap: 2 }}>
+                  <Box
+                    sx={{
+                      maxHeight: { xs: 300, md: 400 },
+                      overflowY: "auto",
+                      padding: 2,
+                    }}
+                  >
                     {matches.length > 0 ? (
-                      matches.map((match, index) => (
-                        <Card
-                          sx={{ minWidth: 200, bgcolor: "primary.main" }}
-                          key={match._id}
-                        >
-                          <CardContent>
-                            <Typography
-                              gutterBottom
-                              sx={{ color: "text.secondary", fontSize: 14 }}
-                            >
-                              {dayjs(match.date).format(
-                                "MMMM D, YYYY -- h:mm A"
-                              )}
-                            </Typography>
-                            <Typography
-                              variant="h5"
-                              component="div"
-                              sx={{ mb: 1.5 }}
-                            >
-                              {match.score}
-                            </Typography>
-                            <Grid2 container sx={{ gap: 2 }}>
-                              {match.players.map((player) => (
-                                <Typography key={player._id}>
-                                  {player.name}
-                                </Typography>
-                              ))}
-                            </Grid2>
-                          </CardContent>
-                          <CardActions>
-                            <Button size="small" color="secondary">
-                              View
-                            </Button>
-                          </CardActions>
-                        </Card>
-                      ))
+                      <Grid2 container sx={{ gap: 2 }}>
+                        {matches.map((match, index) => (
+                          <Card
+                            sx={{ minWidth: 200, bgcolor: "primary.main" }}
+                            key={match._id}
+                          >
+                            <CardContent>
+                              <Typography
+                                gutterBottom
+                                sx={{ color: "text.secondary", fontSize: 14 }}
+                              >
+                                {dayjs(match.date).format(
+                                  "MMMM D, YYYY -- h:mm A"
+                                )}
+                              </Typography>
+                              <Typography
+                                variant="h6"
+                                component="div"
+                                sx={{ mb: 1.5 }}
+                              >
+                                <strong>{match.score}</strong> (
+                                {match.players.length > 2
+                                  ? `${match.players[0].name}, ${match.players[1].name}`
+                                  : match.players[0].name}
+                                )
+                              </Typography>
+                              <Grid2 container>
+                                {match.players.map((player, index) => (
+                                  <Typography
+                                    sx={{ fontSize: ".9rem" }}
+                                    key={player._id}
+                                  >
+                                    {player.name}
+                                    {(index + 1.0) / match.players.length ===
+                                    0.5
+                                      ? "\u00A0\u2014\u00A0"
+                                      : "\u00A0"}
+                                  </Typography>
+                                ))}
+                              </Grid2>
+                            </CardContent>
+                            <CardActions>
+                              <Button size="small" color="secondary">
+                                View
+                              </Button>
+                            </CardActions>
+                          </Card>
+                        ))}
+                      </Grid2>
                     ) : (
                       <Typography>No Matches Yet</Typography>
                     )}
-                  </Grid2>
+                  </Box>
                 </CardContent>
               </Card>
             ) : (
