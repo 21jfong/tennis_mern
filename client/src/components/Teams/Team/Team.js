@@ -3,15 +3,20 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useStyles from "./styles";
+import dayjs from "dayjs";
 
 import {
   Card,
   CardContent,
+  CardActions,
   Grid2,
   Button,
   Typography,
   Paper,
   Grow,
+  Box,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 
@@ -26,6 +31,8 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
   const team = useSelector((state) => state.teams);
   const matches = useSelector((state) => state.matches);
   const user = JSON.parse(localStorage.getItem("profile"));
+
+  const [tab, setTab] = React.useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +51,10 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
 
   const handleCreateMatch = (id) => {
     navigate(`/${id}/matches/create-match/`);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
   };
 
   const checkForAlert = (res) => {
@@ -99,56 +110,108 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
             >
               {team.name}
             </Typography>
-            <Card
-              className={classes.card}
-              sx={{ minWidth: 150, bgcolor: "primary.lighter" }}
-            >
-              <CardContent>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    padding: { xs: 1, md: 2 },
-                    fontSize: { xs: "1.5rem", md: "2rem" },
-                  }}
-                >
-                  Roster
-                </Typography>
-                <hr />
-                {team?.players?.length > 0 ? (
-                  team?.players.map((player, index) => (
-                    <Typography component="p" key={player._id}>
-                      {`${index + 1}.${"\u00A0".repeat(4)}${player.name}`}
-                    </Typography>
-                  ))
-                ) : (
-                  <Typography>
-                    No Players <SentimentVeryDissatisfiedIcon />
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
 
-            <Card className={classes.card} sx={{ bgcolor: "primary.lighter" }}>
-              <CardContent>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    padding: { xs: 1, md: 2 },
-                    fontSize: { xs: "1.5rem", md: "2rem" },
-                  }}
-                >
-                  Recent Matches
-                </Typography>
-                <hr />
-                {matches.length > 0 ? (
-                  matches.map((match, index) => (
-                    <Typography key={match._id}>{match.score}</Typography>
-                  ))
-                ) : (
-                  <Typography>No Matches Yet</Typography>
-                )}
-              </CardContent>
-            </Card>
+            <Tabs
+              value={tab}
+              onChange={handleTabChange}
+              centered
+              textColor="secondary"
+              indicatorColor="secondary"
+            >
+              <Tab label="Team View" />
+              <Tab label="Matches" />
+            </Tabs>
+
+            {tab === 1 ? (
+              <Card
+                className={classes.card}
+                sx={{ bgcolor: "primary.lighter" }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      padding: { xs: 1, md: 2 },
+                      fontSize: { xs: "1.5rem", md: "2rem" },
+                    }}
+                  >
+                    Recent Matches
+                  </Typography>
+                  <hr />
+                  <Grid2 container sx={{ gap: 2 }}>
+                    {matches.length > 0 ? (
+                      matches.map((match, index) => (
+                        <Card
+                          sx={{ minWidth: 200, bgcolor: "primary.main" }}
+                          key={match._id}
+                        >
+                          <CardContent>
+                            <Typography
+                              gutterBottom
+                              sx={{ color: "text.secondary", fontSize: 14 }}
+                            >
+                              {dayjs(match.date).format(
+                                "MMMM D, YYYY -- h:mm A"
+                              )}
+                            </Typography>
+                            <Typography
+                              variant="h5"
+                              component="div"
+                              sx={{ mb: 1.5 }}
+                            >
+                              {match.score}
+                            </Typography>
+                            <Grid2 container sx={{ gap: 2 }}>
+                              {match.players.map((player) => (
+                                <Typography key={player._id}>
+                                  {player.name}
+                                </Typography>
+                              ))}
+                            </Grid2>
+                          </CardContent>
+                          <CardActions>
+                            <Button size="small" color="secondary">
+                              View
+                            </Button>
+                          </CardActions>
+                        </Card>
+                      ))
+                    ) : (
+                      <Typography>No Matches Yet</Typography>
+                    )}
+                  </Grid2>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card
+                className={classes.card}
+                sx={{ minWidth: 150, bgcolor: "primary.lighter" }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      padding: { xs: 1, md: 2 },
+                      fontSize: { xs: "1.5rem", md: "2rem" },
+                    }}
+                  >
+                    Roster
+                  </Typography>
+                  <hr />
+                  {team?.players?.length > 0 ? (
+                    team?.players.map((player, index) => (
+                      <Typography component="p" key={player._id}>
+                        {`${index + 1}.${"\u00A0".repeat(4)}${player.name}`}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography>
+                      No Players <SentimentVeryDissatisfiedIcon />
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </Paper>
         </Grid2>
         <Grid2 container justifyContent="flex-end" sx={{ gap: 2 }}>
