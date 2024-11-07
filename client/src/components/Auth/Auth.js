@@ -1,18 +1,30 @@
-import React, { useState } from 'react'
-import { Container, Typography, Grid2, Button, Alert } from '@mui/material';
-import LockedOutlinedIcon from '@mui/icons-material/LockOutlined'
-import Input from './Input';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { signin, signup, googlesignin } from '../../actions/auth';
+import React, { useState } from "react";
+import { Container, Typography, Grid2, Button, Alert } from "@mui/material";
+import LockedOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Input from "./Input";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { signin, signup, googlesignin } from "../../actions/auth";
 
-import { StyledAvatar, StyledForm, StyledPaper, StyledSubmit, StyledGoogleButton } from './styles';
-import Icon from './Icon';
+import {
+  StyledAvatar,
+  StyledForm,
+  StyledPaper,
+  StyledSubmit,
+  StyledGoogleButton,
+} from "./styles";
+import Icon from "./Icon";
 
-const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 const client_id = process.env.REACT_APP_CLIENT_ID;
 
 const Auth = ({ setIsAlert, setAlertMessage }) => {
@@ -25,7 +37,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let response = {}
+    let response = {};
 
     if (isSignup) {
       response = await dispatch(signup(formData, navigate));
@@ -40,7 +52,8 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
+  const handleShowPassword = () =>
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   const switchMode = () => {
     setIsSignup((prevSU) => !prevSU);
     setShowPassword(false);
@@ -50,14 +63,20 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
     const decoded = jwtDecode(res.credential);
 
     try {
-      const result = { email: decoded.email, name: decoded.name }
+      const result = { email: decoded.email, name: decoded.name };
 
-      let response = {}
+      let response = {};
       response = await dispatch(googlesignin(result, navigate));
       checkForAlert(response);
-      dispatch({ type: 'AUTH', data: { result: { ...response.result, imageURL: decoded.picture }, token: res.credential } });
+      dispatch({
+        type: "AUTH",
+        data: {
+          result: { ...response.result, imageURL: decoded.picture },
+          token: res.credential,
+        },
+      });
 
-      navigate(-1);
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -73,7 +92,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
       setAlertMessage(res.response.data.message);
       setIsAlert(true);
     }
-  }
+  };
 
   return (
     <GoogleOAuthProvider clientId={client_id}>
@@ -82,28 +101,70 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
           <StyledAvatar>
             <LockedOutlinedIcon />
           </StyledAvatar>
-          <Typography variant="h5">{isSignup ? "Sign Up" : "Sign In"}</Typography>
+          <Typography variant="h5">
+            {isSignup ? "Sign Up" : "Sign In"}
+          </Typography>
           <StyledForm onSubmit={handleSubmit}>
             <Grid2 container spacing={2}>
-              {
-                isSignup && (
-                  <>
-                    <Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
-                    <Input name="lastName" label="Last Name" handleChange={handleChange} half />
-                  </>
-                )
-              }
-              <Input name="email" label="Email Address" handleChange={handleChange} type="email" />
-              <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
-              {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" />}
+              {isSignup && (
+                <>
+                  <Input
+                    name="firstName"
+                    label="First Name"
+                    handleChange={handleChange}
+                    autoFocus
+                    half
+                  />
+                  <Input
+                    name="lastName"
+                    label="Last Name"
+                    handleChange={handleChange}
+                    half
+                  />
+                </>
+              )}
+              <Input
+                name="email"
+                label="Email Address"
+                handleChange={handleChange}
+                type="email"
+              />
+              <Input
+                name="password"
+                label="Password"
+                handleChange={handleChange}
+                type={showPassword ? "text" : "password"}
+                handleShowPassword={handleShowPassword}
+              />
+              {isSignup && (
+                <Input
+                  name="confirmPassword"
+                  label="Repeat Password"
+                  handleChange={handleChange}
+                  type="password"
+                />
+              )}
             </Grid2>
-            <StyledSubmit type="submit" fullWidth variant="contained" color="secondary" > {isSignup ? 'Sign Up' : 'Sign In'} </StyledSubmit>
+            <StyledSubmit
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="secondary"
+            >
+              {" "}
+              {isSignup ? "Sign Up" : "Sign In"}{" "}
+            </StyledSubmit>
 
-            <Grid2 container justifyContent="center" alignItems="center" style={{ margin: '16px 0' }}>
+            <Grid2
+              container
+              justifyContent="center"
+              alignItems="center"
+              style={{ margin: "16px 0" }}
+            >
               <GoogleLogin
                 render={(renderProps) => (
                   <StyledGoogleButton
-                    color='primary'
+                    color="primary"
                     onClick={renderProps.onClick}
                     disabled={renderProps.disabled}
                     startIcon={<Icon />}
@@ -121,7 +182,9 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
             <Grid2 container justifyContent="flex-end">
               <Grid2>
                 <Button color="secondary" onClick={switchMode}>
-                  {isSignup ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+                  {isSignup
+                    ? "Already have an account? Sign In"
+                    : "Don't have an account? Sign Up"}
                 </Button>
               </Grid2>
             </Grid2>
@@ -129,7 +192,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
         </StyledPaper>
       </Container>
     </GoogleOAuthProvider>
-  )
-}
+  );
+};
 
-export default Auth
+export default Auth;
