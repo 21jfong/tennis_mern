@@ -9,12 +9,9 @@ export const getMatches = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).json({ message: "No team with that ID." });
-    const team = await Team.findById(id).populate("captain players");
-
-    const playerIds = team.players.map((player) => player._id);
 
     const matches = await Match.find({
-      players: { $not: { $elemMatch: { $nin: playerIds } } },
+      teams: id,
     }).populate("players");
 
     res.status(200).json(matches.reverse());
