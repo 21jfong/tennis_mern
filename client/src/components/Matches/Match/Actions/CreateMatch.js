@@ -47,7 +47,7 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   const loserIndex = doubles ? 2 : 1;
   const loserTwoIndex = 3;
   const scoreRegex =
-    /^([0-8])-[0-8](?:\s+[\d+-]+)?(?:\s+[0-8]-[0-8](?:\s+\d+-\d+)?)$/;
+    /^(?:[0-8]-[0-8] [0-8]-[0-8])(\s[0-8]-[0-8])*(\s\d+-\d+)?$/;
 
   useEffect(() => {
     const fetchData = async () => {
