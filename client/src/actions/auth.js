@@ -1,4 +1,4 @@
-import { AUTH } from "../constants/actionTypes";
+import { AUTH, HEALTH } from "../constants/actionTypes";
 import * as api from "../api/index.js";
 
 export const signin = (formData, navigate) => async (dispatch) => {
@@ -45,6 +45,17 @@ export const googlesignin = (formData, navigate) => async (dispatch) => {
     } else {
       navigate("/");
     }
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const checkHealth = () => async (dispatch) => {
+  try {
+    const { data } = await api.checkHealth();
+
+    dispatch({ type: HEALTH, data });
     return data;
   } catch (error) {
     return error;

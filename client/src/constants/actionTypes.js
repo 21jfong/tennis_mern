@@ -9,11 +9,12 @@ const createActionTypes = (base) => ({
 });
 
 // Auth Actions
-export const AUTH = 'AUTH';
-export const LOGOUT = 'LOGOUT';
+export const AUTH = "AUTH";
+export const LOGOUT = "LOGOUT";
+export const HEALTH = "HEALTH";
 
 // Team Actions
-export const TEAM_ACTIONS = createActionTypes('TEAM');
+export const TEAM_ACTIONS = createActionTypes("TEAM");
 
 // Match Actions
-export const MATCH_ACTIONS = createActionTypes('MATCH');
+export const MATCH_ACTIONS = createActionTypes("MATCH");
