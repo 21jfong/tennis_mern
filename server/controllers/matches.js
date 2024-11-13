@@ -13,9 +13,9 @@ export const getMatches = async (req, res) => {
 
     const playerIds = team.players.map((player) => player._id);
 
-    const matches = await Match.find({ players: { $in: playerIds } }).populate(
-      "players"
-    );
+    const matches = await Match.find({
+      players: { $not: { $elemMatch: { $nin: playerIds } } },
+    }).populate("players");
 
     res.status(200).json(matches.reverse());
   } catch (error) {
