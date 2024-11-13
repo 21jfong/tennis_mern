@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Container, Typography, Grid2, Button, Alert } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Grid2,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import LockedOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Input from "./Input";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -7,7 +13,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { signin, signup, googlesignin } from "../../actions/auth";
+import { signin, signup, googlesignin, checkHealth } from "../../actions/auth";
 
 import {
   StyledAvatar,
@@ -31,6 +37,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState(initialState);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -39,13 +46,20 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
 
     let response = {};
 
-    if (isSignup) {
-      response = await dispatch(signup(formData, navigate));
-    } else {
-      response = await dispatch(signin(formData, navigate));
-    }
+    try {
+      setLoading(true);
+      if (isSignup) {
+        response = await dispatch(signup(formData, navigate));
+      } else {
+        response = await dispatch(signin(formData, navigate));
+      }
 
-    checkForAlert(response);
+      checkForAlert(response);
+    } catch (error) {
+      checkForAlert(response);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -60,13 +74,26 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
   };
 
   const googleSuccess = async (res) => {
+    setLoading(true);
     const decoded = jwtDecode(res.credential);
+
+    const serverIsAvailable = await checkServerAvailability();
+
+    if (!serverIsAvailable) {
+      setLoading(false);
+      setAlertMessage(
+        "Server can take a while to load if this is your first time using it, try again in about a minute."
+      );
+      setIsAlert(true);
+      return;
+    }
 
     try {
       const result = { email: decoded.email, name: decoded.name };
 
       let response = {};
       response = await dispatch(googlesignin(result, navigate));
+
       checkForAlert(response);
       dispatch({
         type: "AUTH",
@@ -75,16 +102,28 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
           token: res.credential,
         },
       });
-
-      navigate("/");
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
+
   const googleFailure = () => {
-    console.log("Google Sign In was unsuccessful. Try again later.");
     setAlertMessage("Google Sign In was unsuccessful. Try again later.");
     setIsAlert(true);
+  };
+
+  const checkServerAvailability = async () => {
+    try {
+      const response = await dispatch(checkHealth());
+
+      if (response.result === "OK") {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
   };
 
   const checkForAlert = (res) => {
@@ -93,6 +132,24 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
       setIsAlert(true);
     }
   };
+
+  if (loading) {
+    return (
+      <Container component="main" maxWidth="xs">
+        <StyledPaper>
+          <StyledAvatar>
+            <LockedOutlinedIcon />
+          </StyledAvatar>
+          <Typography variant="h5">Loading...</Typography>
+          <CircularProgress size={50} />
+          <Typography variant="h6" align="center">
+            Server can take a while to load if this is your first time using it,
+            please try again in a bit.
+          </Typography>
+        </StyledPaper>
+      </Container>
+    );
+  }
 
   return (
     <GoogleOAuthProvider clientId={client_id}>
@@ -151,8 +208,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
               variant="contained"
               color="secondary"
             >
-              {" "}
-              {isSignup ? "Sign Up" : "Sign In"}{" "}
+              {isSignup ? "Sign Up" : "Sign In"}
             </StyledSubmit>
 
             <Grid2

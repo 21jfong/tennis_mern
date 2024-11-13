@@ -87,3 +87,7 @@ export const googlesignin = async (req, res) => {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
+
+export const checkHealth = async (req, res) => {
+  res.status(200).json({ result: "OK" });
+};

@@ -24,3 +24,4 @@ export const createMatch = (newMatch) => API.post('/matches/create-match', newMa
 export const signIn = (formData) => API.post('/user/signin', formData);
 export const signUp = (formData) => API.post('/user/signup', formData);
 export const googleSignIn = (formData) => API.post('/user/googlesignin', formData);
+export const checkHealth = () => API.get('/user/health');
