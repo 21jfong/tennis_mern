@@ -45,7 +45,7 @@ export const createTeam = async (req, res) => {
   const updatedTeam = {
     name: team.name,
     captain,
-    players: team.players,
+    players: [captain],
     teamCode: generateTeamCode(),
   };
 
@@ -71,8 +71,10 @@ export const editTeam = async (req, res) => {
 
   let newPlayers = newTeam.players;
 
-  if (newTeam.captain._id !== newTeam.oldCaptain._id) {
-    newPlayers = newTeam.players.filter((player) => player === newTeam.captain);
+  if (
+    !newTeam.players.some((player) => player._id === newTeam.captain._id) &&
+    newTeam.captain._id != newTeam.oldCaptain._id
+  ) {
     newPlayers.push(newTeam.oldCaptain);
   }
 
@@ -113,7 +115,7 @@ export const joinTeam = async (req, res) => {
 
   const player = await Player.findOne({ user_id: req.userId });
 
-  if (!team.players.includes(player._id) && !team.captain.equals(player._id)) {
+  if (!team.players.includes(player._id)) {
     team.players.push(player);
     const updatedTeam = await Team.findByIdAndUpdate(team.id, team, {
       new: true,
