@@ -161,14 +161,22 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
                           onChange={handleCaptainSelectChange}
                           label="Captain"
                         >
-                          <MenuItem value={team.captain._id}>
-                            <strong>{team.captain?.name}</strong>
-                          </MenuItem>
+                          {!teamData.players.some(
+                            (player) => player._id === teamData.captain._id
+                          ) ? (
+                            <MenuItem value={teamData.captain._id}>
+                              <strong>{teamData.captain.name}</strong>
+                            </MenuItem>
+                          ) : null}
 
                           {teamData.players?.length > 0 &&
                             teamData.players.map((player) => (
-                              <MenuItem key={player} value={player._id}>
-                                {player.name}
+                              <MenuItem key={player._id} value={player._id}>
+                                {player._id === team.captain._id ? (
+                                  <strong>{player.name}</strong>
+                                ) : (
+                                  player.name
+                                )}
                               </MenuItem>
                             ))}
                         </Select>

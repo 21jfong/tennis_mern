@@ -82,7 +82,7 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
                     color="secondary"
                     type="submit"
                   >
-                    Submit
+                    Create
                   </Button>
                 </Grid2>
               </Grid2>

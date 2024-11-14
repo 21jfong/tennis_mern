@@ -174,7 +174,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                         {matches.map((match) => (
                           <Card
                             sx={{
-                              width: 275,
+                              width: { md: 275 },
                               bgcolor: "primary.main",
                               cursor: "pointer",
                             }}
