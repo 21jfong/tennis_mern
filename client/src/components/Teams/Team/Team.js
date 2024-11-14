@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -164,9 +164,18 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                     Roster
                   </Typography>
                   <hr />
-                  <PlayerCard
-                    players={team?.players?.length > 0 ? team.players : []}
-                  ></PlayerCard>
+                  <Box
+                    sx={{
+                      maxHeight: { xs: 300, md: 400 },
+                      overflowY: "auto",
+                      padding: 2,
+                    }}
+                  >
+                    <PlayerCard
+                      players={team?.players?.length > 0 ? team.players : []}
+                      matches={matches}
+                    ></PlayerCard>
+                  </Box>
                 </CardContent>
               </Card>
             )}
