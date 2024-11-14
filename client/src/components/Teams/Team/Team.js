@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useStyles from "./styles";
-import dayjs from "dayjs";
+import PlayerCard from "./PlayerCard";
+import MatchCard from "./MatchCard";
 
 import {
   Card,
@@ -17,7 +18,6 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 
 import { getTeam } from "../../../actions/teams";
 import { getMatches } from "../../../actions/matches";
@@ -30,7 +30,6 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
   const team = useSelector((state) => state.teams);
   const matches = useSelector((state) => state.matches);
   const user = JSON.parse(localStorage.getItem("profile"));
-  const [expandedCards, setExpandedCards] = useState({});
 
   const [tab, setTab] = React.useState(0);
 
@@ -45,16 +44,6 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
     fetchData();
   }, [id, dispatch]);
 
-  useEffect(() => {
-    if (matches.length > 0) {
-      const initialExpandedState = matches.reduce((acc, match) => {
-        acc[match._id] = true;
-        return acc;
-      }, {});
-      setExpandedCards(initialExpandedState);
-    }
-  }, [matches]);
-
   const handleEdit = (id) => {
     navigate(`/my-teams/${id}/edit-team`);
   };
@@ -67,25 +56,11 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
     setTab(newValue);
   };
 
-  const handleMatchToggle = (id) => {
-    setExpandedCards((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   const checkForAlert = (res) => {
     if (res?.status && res.status !== 200) {
       setAlertMessage(res.response.data.message);
       setIsAlert(true);
     }
-  };
-
-  const getSeparator = (index, totalPlayers) => {
-    if ((index + 1.0) / totalPlayers === 0.5) {
-      return "\u00A0\u2014\u00A0"; // En dash separator for the middle
-    }
-    return index + 1 !== totalPlayers ? ",\u00A0" : "\u00A0"; // Comma or final space
   };
 
   return (
@@ -169,89 +144,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                       padding: 2,
                     }}
                   >
-                    {matches.length > 0 ? (
-                      <Grid2 container justifyContent="center" sx={{ gap: 2 }}>
-                        {matches.map((match) => (
-                          <Card
-                            sx={{
-                              width: { md: 275 },
-                              bgcolor: "primary.main",
-                              cursor: "pointer",
-                            }}
-                            key={match._id}
-                            onClick={() => handleMatchToggle(match._id)}
-                          >
-                            <CardContent>
-                              {expandedCards[match._id] ? (
-                                <>
-                                  <Typography
-                                    gutterBottom
-                                    sx={{
-                                      color: "text.secondary",
-                                      fontSize: 14,
-                                    }}
-                                  >
-                                    {dayjs(match.date).format(
-                                      "MMMM D, YYYY -- h:mm A"
-                                    )}
-                                  </Typography>
-                                  <Typography
-                                    variant="h6"
-                                    component="div"
-                                    sx={{ mb: 1.5 }}
-                                  >
-                                    {match.score} (
-                                    {match.players.length > 2
-                                      ? `${match.players[0].name}, ${match.players[1].name}`
-                                      : match.players[0].name}
-                                    )
-                                  </Typography>
-                                  <Typography
-                                    sx={{ color: "text.secondary", mb: 1.5 }}
-                                  >
-                                    {match.players.length > 2
-                                      ? "Doubles"
-                                      : "Singles"}
-                                  </Typography>
-                                  <Grid2 container>
-                                    {match.players.map((player, index) => (
-                                      <Typography
-                                        sx={{ fontSize: ".9rem" }}
-                                        key={player._id}
-                                      >
-                                        {player.name}
-                                        {getSeparator(
-                                          index,
-                                          match.players.length
-                                        )}
-                                      </Typography>
-                                    ))}
-                                  </Grid2>
-                                </>
-                              ) : (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {`Match on ${dayjs(match.date).format(
-                                    "MMMM D, YYYY"
-                                  )}`}
-                                  <br />
-                                  <strong>Click to expand</strong>
-                                </Typography>
-                              )}
-                            </CardContent>
-                            {/* <CardActions>
-                              <Button size="small" color="secondary">
-                                View
-                              </Button>
-                            </CardActions> */}
-                          </Card>
-                        ))}
-                      </Grid2>
-                    ) : (
-                      <Typography>No Matches Yet</Typography>
-                    )}
+                    <MatchCard matches={matches}></MatchCard>
                   </Box>
                 </CardContent>
               </Card>
@@ -271,17 +164,9 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
                     Roster
                   </Typography>
                   <hr />
-                  {team?.players?.length > 0 ? (
-                    team?.players.map((player, index) => (
-                      <Typography component="p" key={player._id}>
-                        {`${index + 1}.${"\u00A0".repeat(4)}${player.name}`}
-                      </Typography>
-                    ))
-                  ) : (
-                    <Typography>
-                      No Players <SentimentVeryDissatisfiedIcon />
-                    </Typography>
-                  )}
+                  <PlayerCard
+                    players={team?.players?.length > 0 ? team.players : []}
+                  ></PlayerCard>
                 </CardContent>
               </Card>
             )}

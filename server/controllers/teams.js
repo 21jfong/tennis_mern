@@ -18,7 +18,7 @@ export const getTeams = async (req, res) => {
       $or: [{ captain: player.id }, { players: player.id }],
     }).populate("captain players");
 
-    res.status(200).json(teams);
+    res.status(200).json(teams.reverse());
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
