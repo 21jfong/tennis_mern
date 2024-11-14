@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -40,6 +40,14 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAwake = async () => {
+      await dispatch(checkHealth());
+    };
+
+    checkAwake();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
