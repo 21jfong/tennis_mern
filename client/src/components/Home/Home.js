@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardContent,
@@ -18,12 +19,23 @@ import florin1 from "../../images/florin4.webp";
 import florin5 from "../../images/florin5.webp";
 import florin6 from "../../images/florin6.webp";
 
+import { checkHealth } from "../../actions/auth";
+
 const Home = () => {
+  const dispatch = useDispatch();
   const photos = [florin1, florin2, florin3, florin4, florin5, florin6];
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [view, setView] = useState(false);
   const totalPhotos = photos.length;
+
+  useEffect(() => {
+    const checkAwake = async () => {
+      await dispatch(checkHealth());
+    };
+
+    checkAwake();
+  }, []);
 
   const handleNext = () => {
     setCurrentPhotoIndex((prevIndex) => (prevIndex + 1) % totalPhotos);
