@@ -125,7 +125,6 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
   const checkServerAvailability = async () => {
     try {
       const response = await dispatch(checkHealth());
-
       if (response.result === "OK") {
         return true;
       }
