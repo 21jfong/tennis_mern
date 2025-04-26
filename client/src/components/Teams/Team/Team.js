@@ -1,60 +1,45 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import useStyles from "./styles";
-import PlayerCard from "./PlayerCard";
-import MatchCard from "./MatchCard";
 
 import {
-  Card,
-  CardContent,
+  Typography,
+  Container,
+  Box,
+  Grow,
   Grid2,
   Button,
-  Typography,
-  Paper,
-  Grow,
-  Box,
-  Tabs,
-  Tab,
+  Card,
+  CardContent,
+  Stack,
 } from "@mui/material";
+
+import PlayerCard from "./PlayerCard";
+import MatchCard from "./MatchCard";
 
 import { getTeam } from "../../../actions/teams";
 import { getMatches } from "../../../actions/matches";
 
 const Team = ({ setIsAlert, setAlertMessage }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const team = useSelector((state) => state.teams);
   const matches = useSelector((state) => state.matches);
   const user = JSON.parse(localStorage.getItem("profile"));
-
-  const [tab, setTab] = React.useState(0);
+  const classes = useStyles();
 
   useEffect(() => {
     const fetchData = async () => {
-      const team = await dispatch(getTeam(id));
-      const matches = await dispatch(getMatches(id));
-      checkForAlert(team);
-      checkForAlert(matches);
+      const teamRes = await dispatch(getTeam(id));
+      const matchRes = await dispatch(getMatches(id));
+      checkForAlert(teamRes);
+      checkForAlert(matchRes);
     };
 
     fetchData();
   }, [id, dispatch]);
-
-  const handleEdit = (id) => {
-    navigate(`/my-teams/${id}/edit-team`);
-  };
-
-  const handleCreateMatch = (id) => {
-    navigate(`/${id}/matches/create-match/`);
-  };
-
-  const handleTabChange = (event, newValue) => {
-    setTab(newValue);
-  };
 
   const checkForAlert = (res) => {
     if (res?.status && res.status !== 200) {
@@ -63,136 +48,128 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/my-teams/${id}/edit-team`);
+  };
+
+  const handleCreateMatch = () => {
+    navigate(`/${id}/matches/create-match`);
+  };
+
   return (
     <Grow in>
-      <Grid2
-        container
-        direction="column"
-        justifyContent="space-between"
-        sx={{ gap: 2 }}
-      >
-        <Grid2>
-          <Grid2
-            container
-            direction={{ xs: "column", md: "row" }}
-            justifyContent={{ xs: "flex-start", md: "space-between" }}
-            alignItems={{ md: "center" }}
-            sx={{ gap: { md: 15 }, marginBottom: 2 }}
+      <Container maxWidth="md" sx={{ mt: 5 }}>
+        <Stack spacing={4}>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", md: "row" }}
+            justifyContent="space-between"
+            alignItems={{ xs: "flex-start", md: "center" }}
+            gap={2}
           >
-            <Grid2 xs="auto">
-              <Typography color="primary">
-                <strong>Team code: </strong>
-                {`${team?.teamCode}`}
+            <Box>
+              <Typography variant="body1" color="primary">
+                <strong>Team Code:</strong> {team?.teamCode}
               </Typography>
-            </Grid2>
-            <Grid2 xs="auto">
-              <Typography color="primary">
-                <strong>Captain: </strong>
-                {`${team?.captain?.name}`}
+              <Typography variant="body1" color="primary">
+                <strong>Captain:</strong> {team?.captain?.name}
               </Typography>
-            </Grid2>
-
-            <Grid2 xs="auto" sx={{ mt: { xs: 1, md: 0 }, ml: "auto" }}>
-              <Button variant="contained" onClick={() => handleCreateMatch(id)}>
+            </Box>
+            <Box display="flex" gap={2}>
+              {team?.captain?.user_id === user?.result?._id && (
+                <Button variant="contained" onClick={handleEdit}>
+                  Edit Team
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={handleCreateMatch}
+                sx={{ alignSelf: { xs: "stretch", md: "center" } }}
+              >
                 Register Match
               </Button>
-            </Grid2>
-          </Grid2>
+            </Box>
+          </Box>
 
-          <Paper className={classes.paper} sx={{ bgcolor: "primary.main" }}>
-            <Typography
-              variant="h3"
-              sx={{
-                padding: { xs: 1, md: 2 },
-                fontSize: { xs: "1.5rem", md: "2rem" },
-              }}
-            >
-              {team.name}
-            </Typography>
+          {/* Team Name */}
+          <Typography
+            variant="h4"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              mb: 1,
+              fontSize: { xs: "1.8rem", md: "2.2rem" },
+            }}
+          >
+            {team?.name}
+          </Typography>
 
-            <Tabs
-              value={tab}
-              onChange={handleTabChange}
-              centered
-              textColor="secondary"
-              indicatorColor="secondary"
-            >
-              <Tab label="Team View" />
-              <Tab label="Matches" />
-            </Tabs>
+          <Card sx={{ bgcolor: "primary.lighter", borderRadius: 2 }}>
+            <CardContent>
+              <Box
+                sx={{
+                  maxHeight: { xs: 400, md: 600 },
+                  overflowY: "auto",
+                  px: 1,
+                }}
+              >
+                <PlayerCard
+                  players={team?.players?.length > 0 ? team.players : []}
+                  matches={matches}
+                />
+              </Box>
+            </CardContent>
+          </Card>
 
-            {tab === 1 ? (
+          <Grid2 container spacing={2} sx={{ mt: 2 }}>
+            {/* Matches */}
+            <Grid2 xs={12} md={6}>
               <Card
                 className={classes.card}
                 sx={{ bgcolor: "primary.lighter" }}
               >
                 <CardContent>
                   <Typography
-                    variant="h3"
+                    variant="h5"
                     sx={{
-                      padding: { xs: 1, md: 2 },
+                      paddingBottom: 2,
                       fontSize: { xs: "1.5rem", md: "2rem" },
                     }}
                   >
                     Recent Matches
                   </Typography>
-                  <hr />
                   <Box
                     sx={{
                       maxHeight: { xs: 300, md: 400 },
                       overflowY: "auto",
-                      padding: 2,
+                      padding: 1,
                     }}
                   >
-                    <MatchCard matches={matches}></MatchCard>
+                    <MatchCard matches={matches} />
                   </Box>
                 </CardContent>
               </Card>
-            ) : (
-              <Card
-                className={classes.card}
-                sx={{ minWidth: 150, bgcolor: "primary.lighter" }}
-              >
-                <CardContent>
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      padding: { xs: 1, md: 2 },
-                      fontSize: { xs: "1.5rem", md: "2rem" },
-                    }}
-                  >
-                    Roster
-                  </Typography>
-                  <hr />
-                  <Box
-                    sx={{
-                      maxHeight: { xs: 300, md: 400 },
-                      overflowY: "auto",
-                      padding: 2,
-                    }}
-                  >
-                    <PlayerCard
-                      players={team?.players?.length > 0 ? team.players : []}
-                      matches={matches}
-                    ></PlayerCard>
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
-          </Paper>
-        </Grid2>
-        <Grid2 container justifyContent="flex-end" sx={{ gap: 2 }}>
-          <Button variant="contained" onClick={() => navigate(-1)}>
-            Back
-          </Button>
+            </Grid2>
+          </Grid2>
 
-          {team?.captain?.user_id === user.result._id ? (
-            <Button variant="contained" onClick={() => handleEdit(id)}>
-              Edit Team
+          {/* Bottom Buttons */}
+          <Box display="flex" justifyContent="flex-end" gap={2}>
+            <Button
+              variant="contained"
+              onClick={() => navigate(-1)}
+              sx={{
+                backgroundColor: "primary.lighter",
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+              }}
+            >
+              Back
             </Button>
-          ) : null}
-        </Grid2>
-      </Grid2>
+          </Box>
+        </Stack>
+      </Container>
     </Grow>
   );
 };

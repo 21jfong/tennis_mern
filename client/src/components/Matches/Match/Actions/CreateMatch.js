@@ -4,21 +4,21 @@ import {
   Button,
   Typography,
   Paper,
-  Grid2,
   Box,
   Grow,
   Card,
+  Stack,
+  FormControlLabel,
+  Checkbox,
+  Container,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import useStyles from "../styles";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 import { createMatch } from "../../../../actions/matches";
 import { getTeam } from "../../../../actions/teams";
@@ -32,15 +32,15 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
     score: "",
     date: dayjs(),
   });
-  const [doubles, setDoubles] = React.useState(false);
-  const team = useSelector((state) => state.teams);
-  const [players, setPlayers] = React.useState(team.players);
-  const [selectedPlayers, setSelectedPlayers] = React.useState([]);
+
+  const [doubles, setDoubles] = useState(false);
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [error, setError] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const classes = useStyles();
   const navigate = useNavigate();
+  const team = useSelector((state) => state.teams);
+  const players = team?.players || [];
 
   const winnerIndex = 0;
   const winnerTwoIndex = 1;
@@ -51,17 +51,11 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const team = await dispatch(getTeam(id));
-      checkForAlert(team);
+      const response = await dispatch(getTeam(id));
+      checkForAlert(response);
     };
-
     fetchData();
   }, [id, dispatch]);
-
-  const handleScoreChange = (e) => {
-    const value = e.target.value;
-    setMatchData({ ...matchData, score: value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,29 +91,31 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
   };
 
   const handleSelectChange = (event, index) => {
-    let newPlayers = [...matchData.players];
-    newPlayers[index] = event.target.value;
-    let shownPlayers = players.filter((player) => !newPlayers.includes(player));
-    const selected = team.players.filter(
-      (player) =>
-        !shownPlayers.some((shownPlayer) => shownPlayer._id === player._id)
+    const updatedPlayers = [...matchData.players];
+    updatedPlayers[index] = event.target.value;
+
+    const shownPlayers = players.filter((p) => !updatedPlayers.includes(p));
+
+    const selected = players.filter(
+      (p) => !shownPlayers.some((s) => s._id === p._id)
     );
+
     setSelectedPlayers(selected);
-    setMatchData({ ...matchData, players: newPlayers });
+    setMatchData({ ...matchData, players: updatedPlayers });
   };
 
-  const handleDoublesChange = (event) => {
-    setDoubles(event.target.checked);
-    const newPlayers = [
+  const handleDoublesChange = (e) => {
+    const isChecked = e.target.checked;
+    setDoubles(isChecked);
+
+    const updated = [
       matchData.players[0],
-      ...(doubles ? [matchData.players[2]] : [undefined, matchData.players[1]]),
+      ...(isChecked
+        ? [undefined, matchData.players[1], undefined]
+        : [matchData.players[2]]),
     ];
-    setSelectedPlayers(newPlayers);
-    setMatchData({ ...matchData, players: newPlayers });
-  };
-
-  const handleIsDisabled = (player) => {
-    return selectedPlayers.some((p) => p?._id === player._id);
+    setSelectedPlayers(updated);
+    setMatchData({ ...matchData, players: updated });
   };
 
   const checkForAlert = (res) => {
@@ -129,145 +125,142 @@ const CreateMatch = ({ setIsAlert, setAlertMessage }) => {
     }
   };
 
+  const isDisabled = (player) =>
+    selectedPlayers.some((p) => p?._id === player._id);
+
   return (
-    <Box>
-      {players ? (
-        <Grow in>
-          <Grid2 container direction="column" sx={{ gap: 2 }}>
-            <Paper
-              sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
-              className={classes.paper}
-            >
-              <form
-                autoComplete="off"
-                noValidate
-                className={`${classes.root} ${classes.form}`}
-                onSubmit={handleSubmit}
-              >
-                <Card sx={{ bgcolor: "primary.lighter", padding: 2 }}>
-                  <Grid2 container justifyContent={"center"}>
-                    <Typography variant="h6">Registering Match</Typography>
-                  </Grid2>
-                  <Grid2 container direction="column">
-                    <Grid2 container justifyContent={"center"}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
-                          label="Match date and time"
-                          defaultValue={matchData.date}
-                          onChange={(e) =>
-                            setMatchData({ ...matchData, date: e })
-                          }
-                        />
-                      </LocalizationProvider>
-                    </Grid2>
+    <Grow in>
+      <Container maxWidth="md" sx={{ mt: 5 }}>
+        {players.length > 0 ? (
+          <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+            <Paper sx={{ p: 3, bgcolor: "primary.main" }}>
+              <Card sx={{ bgcolor: "primary.lighter", p: 3 }}>
+                <Stack spacing={3}>
+                  <Typography variant="h6" textAlign="center">
+                    Register Match
+                  </Typography>
 
-                    <Grid2 container justifyContent={"center"}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={doubles}
-                            label="Doubles"
-                            onChange={handleDoublesChange}
-                            inputProps={{ "aria-label": "controlled" }}
-                          />
-                        }
-                        label="Doubles"
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      label="Match date and time"
+                      value={matchData.date}
+                      onChange={(date) => setMatchData({ ...matchData, date })}
+                      sx={{ width: "100%" }}
+                    />
+                  </LocalizationProvider>
+
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={doubles}
+                        onChange={handleDoublesChange}
                       />
-                    </Grid2>
+                    }
+                    label="Doubles Match"
+                  />
 
-                    <Grid2 container sx={{ gap: { md: 5 } }}>
-                      <Grid2>
+                  <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={3}
+                    justifyContent="center"
+                  >
+                    {/* Winners */}
+                    <Stack spacing={2}>
+                      <SelectFormControl
+                        label="Winner"
+                        value={matchData.players[winnerIndex]}
+                        onChange={(e) => handleSelectChange(e, winnerIndex)}
+                        players={players}
+                        handleIsDisabled={isDisabled}
+                      />
+                      {doubles && (
                         <SelectFormControl
                           label="Winner"
-                          value={matchData.players[winnerIndex]}
-                          onChange={(e) => handleSelectChange(e, winnerIndex)}
+                          value={matchData.players[winnerTwoIndex]}
+                          onChange={(e) =>
+                            handleSelectChange(e, winnerTwoIndex)
+                          }
                           players={players}
-                          handleIsDisabled={handleIsDisabled}
+                          handleIsDisabled={isDisabled}
                         />
+                      )}
+                    </Stack>
 
-                        {doubles && (
-                          <SelectFormControl
-                            label="Winner"
-                            value={matchData.players[winnerTwoIndex]}
-                            onChange={(e) =>
-                              handleSelectChange(e, winnerTwoIndex)
-                            }
-                            players={players}
-                            handleIsDisabled={handleIsDisabled}
-                          />
-                        )}
-                      </Grid2>
-
-                      <Grid2>
+                    {/* Losers */}
+                    <Stack spacing={2}>
+                      <SelectFormControl
+                        label="Loser"
+                        value={matchData.players[loserIndex]}
+                        onChange={(e) => handleSelectChange(e, loserIndex)}
+                        players={players}
+                        handleIsDisabled={isDisabled}
+                      />
+                      {doubles && (
                         <SelectFormControl
                           label="Loser"
-                          value={matchData.players[loserIndex]}
-                          onChange={(e) => handleSelectChange(e, loserIndex)}
+                          value={matchData.players[loserTwoIndex]}
+                          onChange={(e) => handleSelectChange(e, loserTwoIndex)}
                           players={players}
-                          handleIsDisabled={handleIsDisabled}
+                          handleIsDisabled={isDisabled}
                         />
+                      )}
+                    </Stack>
+                  </Stack>
 
-                        {doubles && (
-                          <SelectFormControl
-                            label="Loser"
-                            value={matchData.players[loserTwoIndex]}
-                            onChange={(e) =>
-                              handleSelectChange(e, loserTwoIndex)
-                            }
-                            players={players}
-                            handleIsDisabled={handleIsDisabled}
-                          />
-                        )}
-                      </Grid2>
-                    </Grid2>
+                  <TextField
+                    label="Score (6-2 6-4)"
+                    value={matchData.score}
+                    onChange={(e) =>
+                      setMatchData({ ...matchData, score: e.target.value })
+                    }
+                    error={error}
+                    helperText={
+                      error
+                        ? "Must have at least 2 sets and optional tiebreaker"
+                        : ""
+                    }
+                    required
+                  />
 
-                    <TextField
-                      name="Score"
-                      variant="outlined"
-                      label="Score (6-2 6-2)"
-                      value={matchData.score}
-                      onChange={handleScoreChange}
-                      error={error}
-                      helperText={
-                        error ? "Must have 2+ sets and optional tiebreaker" : ""
-                      }
-                      required
-                    />
-                  </Grid2>
-
-                  <Grid2 container justifyContent="flex-end">
+                  <Box display="flex" justifyContent="flex-end" gap={2}>
                     <Button
-                      className={classes.buttonSubmit}
                       variant="contained"
-                      color="secondary"
-                      type="submit"
-                      sx={{ m: 2 }}
+                      onClick={() => navigate(-1)}
+                      sx={{
+                        backgroundColor: "secondary",
+                        "&:hover": {
+                          backgroundColor: "primary.dark",
+                        },
+                      }}
                     >
+                      Back
+                    </Button>
+                    <Button type="submit" variant="contained" color="secondary">
                       Submit
                     </Button>
-                  </Grid2>
-                </Card>
-              </form>
+                  </Box>
+                </Stack>
+              </Card>
             </Paper>
-            <Grid2 container justifyContent="flex-end">
-              <Button variant="contained" onClick={() => navigate(-1)}>
-                Back
-              </Button>
-            </Grid2>
-          </Grid2>
-        </Grow>
-      ) : (
-        <Box>
-          <Typography>
-            Something went wrong, please go back to the previous page and try
-            again.
-          </Typography>
-          <Button variant="contained" onClick={() => navigate(-1)}>
-            Back
-          </Button>
-        </Box>
-      )}
-    </Box>
+          </form>
+        ) : (
+          <Box textAlign="center">
+            <Typography>
+              Something went wrong. Please go back and try again.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => navigate(-1)}
+              sx={{
+                mt: 2,
+              }}
+            >
+              Back
+            </Button>
+          </Box>
+        )}
+      </Container>
+    </Grow>
   );
 };
 

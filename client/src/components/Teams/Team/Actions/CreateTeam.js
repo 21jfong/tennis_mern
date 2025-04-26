@@ -3,13 +3,12 @@ import {
   TextField,
   Button,
   Typography,
-  Paper,
-  Grid2,
-  Card,
+  Container,
+  Box,
+  Stack,
   Grow,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import useStyles from "../styles";
 import { useNavigate } from "react-router-dom";
 
 import { createTeam } from "../../../../actions/teams";
@@ -22,7 +21,6 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
     teamCode: "",
   });
   const dispatch = useDispatch();
-  const classes = useStyles();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("profile"));
 
@@ -47,54 +45,67 @@ const CreateTeam = ({ setIsAlert, setAlertMessage }) => {
 
   return (
     <Grow in>
-      <Grid2 container direction="column" sx={{ gap: 2 }}>
-        <Paper
-          sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
-          className={classes.paper}
+      <Container maxWidth="sm" sx={{ mt: 6 }}>
+        <Box
+          sx={{
+            p: 4,
+            borderRadius: 3,
+            backgroundColor: "primary.main",
+            boxShadow: 2,
+          }}
         >
-          <form
-            autoComplete="off"
-            noValidate
-            className={`${classes.root} ${classes.form}`}
-            onSubmit={handleSubmit}
-          >
-            <Card sx={{ bgcolor: "primary.lighter", padding: 2 }}>
-              <Grid2 container justifyContent={"center"}>
-                <Typography variant="h6">Creating a Team</Typography>
-              </Grid2>
-              <Grid2 container>
-                <Grid2>
-                  <TextField
-                    name="name"
-                    sx={{ height: 56 }}
-                    variant="outlined"
-                    label="Team Name"
-                    value={teamData.name}
-                    onChange={(e) =>
-                      setTeamData({ ...teamData, name: e.target.value })
-                    }
-                  />
-                </Grid2>
-                <Grid2 alignItems="center" display="flex">
-                  <Button
-                    className={classes.buttonSubmit}
-                    variant="contained"
-                    color="secondary"
-                    type="submit"
-                  >
-                    Create
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </Card>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={3}>
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                textAlign="center"
+                color="white"
+              >
+                Create a Team
+              </Typography>
+
+              <TextField
+                name="name"
+                label="Team Name"
+                variant="outlined"
+                fullWidth
+                value={teamData.name}
+                onChange={(e) =>
+                  setTeamData({ ...teamData, name: e.target.value })
+                }
+              />
+
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button
+                  variant="contained"
+                  onClick={() => navigate(-1)}
+                  sx={{
+                    backgroundColor: "primary.dark",
+                    "&:hover": {
+                      backgroundColor: "primary.main",
+                    },
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "primary.lighter",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  }}
+                >
+                  Create
+                </Button>
+              </Stack>
+            </Stack>
           </form>
-        </Paper>
-        <Grid2 container justifyContent="flex-end">
-          <Button variant="contained" onClick={() => navigate(-1)}>
-            Back
-          </Button>
-        </Grid2>
-      </Grid2>
+        </Box>
+      </Container>
     </Grow>
   );
 };
