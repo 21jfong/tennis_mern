@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import {
   TextField,
   Button,
   Typography,
-  Paper,
-  Grid2,
-  Box,
   Container,
-  Card,
+  Box,
   Grow,
+  Stack,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -24,10 +21,9 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-
-import useStyles from "../styles";
-import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import { editTeam, getTeam, deleteTeam } from "../../../../actions/teams";
 
@@ -37,24 +33,33 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
 
   const team = useSelector((state) => state.teams);
+
   const [teamData, setTeamData] = useState({
-    name: team.name,
-    captain: team.captain,
-    players: team.players,
-    teamCode: team.teamCode,
+    name: "",
+    captain: {},
+    players: [],
+    teamCode: "",
   });
   const [open, setOpen] = useState(false);
-
-  const classes = useStyles();
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await dispatch(getTeam(id));
       checkForAlert(response);
     };
-
     fetchData();
   }, [id, dispatch]);
+
+  useEffect(() => {
+    if (team && team._id === id) {
+      setTeamData({
+        name: team.name,
+        captain: team.captain,
+        players: team.players,
+        teamCode: team.teamCode,
+      });
+    }
+  }, [team, id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,39 +70,27 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
     navigate(-1);
   };
 
-  const handleRemovePlayer = async (p) => {
+  const handleRemovePlayer = (p) => {
     const newPlayers = teamData.players.filter((player) => player !== p);
     setTeamData({ ...teamData, players: newPlayers });
-  };
-
-  const handleConfirmDelete = async () => {
-    handleDelete();
-    setOpen(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleCaptainSelectChange = (event) => {
-    const p = teamData.players.find(
-      (player) => player._id === event.target.value
-    );
-    if (p) {
-      setTeamData({ ...teamData, captain: p });
-    } else {
-      setTeamData({ ...teamData, captain: team.captain });
-    }
   };
 
   const handleDelete = async () => {
     const response = await dispatch(deleteTeam(id));
     checkForAlert(response);
     navigate("/my-teams");
+  };
+
+  const handleConfirmDelete = () => {
+    setOpen(false);
+    handleDelete();
+  };
+
+  const handleCaptainSelectChange = (e) => {
+    const selected = teamData.players.find((p) => p._id === e.target.value);
+    if (selected) {
+      setTeamData({ ...teamData, captain: selected });
+    }
   };
 
   const checkForAlert = (res) => {
@@ -108,173 +101,150 @@ const EditTeam = ({ setIsAlert, setAlertMessage }) => {
   };
 
   return (
-    <Container>
-      <Grow in>
-        <Grid2 container direction="column" sx={{ gap: 2 }}>
-          <Typography color="primary">
-            <strong>Team code: </strong>
-            {`${team.teamCode}`}
+    <Grow in>
+      <Container maxWidth="md" sx={{ mt: 5 }}>
+        <Stack spacing={3}>
+          <Typography variant="h6" color="primary">
+            <strong>Team code:</strong> {teamData.teamCode}
           </Typography>
-          <Paper
-            sx={{ backgroundColor: (theme) => theme.palette.primary.main }}
-            className={classes.paper}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              backgroundColor: "primary.main",
+              boxShadow: 2,
+            }}
           >
-            <form
-              autoComplete="off"
-              noValidate
-              className={`${classes.root} ${classes.form}`}
-              onSubmit={handleSubmit}
-            >
-              <Card sx={{ bgcolor: "primary.lighter" }}>
-                <Grid2
-                  container
-                  direction="column"
-                  sx={{ padding: 2, gap: { xs: 3, md: 3 } }}
+            <Stack spacing={3}>
+              <Typography variant="h5" textAlign="center" color="white">
+                Editing <strong>{teamData.name}</strong>
+              </Typography>
+
+              <TextField
+                name="name"
+                label="Team Name"
+                variant="outlined"
+                fullWidth
+                value={teamData.name}
+                onChange={(e) =>
+                  setTeamData({ ...teamData, name: e.target.value })
+                }
+              />
+
+              <FormControl fullWidth>
+                <InputLabel id="captain-label">Captain</InputLabel>
+                <Select
+                  labelId="captain-label"
+                  id="select-captain"
+                  value={teamData.captain?._id || ""}
+                  label="Captain"
+                  onChange={handleCaptainSelectChange}
                 >
-                  <Box>
-                    <Grid2 container justifyContent={"center"}>
-                      <Typography variant="h6">
-                        Editing <strong>{team.name}</strong>
-                      </Typography>
-                    </Grid2>
-                    <Grid2 container>
-                      <TextField
-                        name="name"
-                        variant="outlined"
-                        label="Team Name"
-                        value={teamData.name}
-                        onChange={(e) =>
-                          setTeamData({ ...teamData, name: e.target.value })
+                  {teamData.players?.map((player) => (
+                    <MenuItem key={player._id} value={player._id}>
+                      {player.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Box>
+                <Typography variant="h6" gutterBottom color="secondary.main">
+                  Players
+                </Typography>
+                {teamData.players?.length > 0 ? (
+                  <List dense>
+                    {teamData.players.map((player, index) => (
+                      <ListItem
+                        key={player._id}
+                        secondaryAction={
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => handleRemovePlayer(player)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                         }
-                      />
-                      <FormControl
-                        variant="standard"
-                        sx={{ m: 1, minWidth: 120 }}
                       >
-                        <InputLabel id="select-captain-label">
-                          Captain
-                        </InputLabel>
-                        <Select
-                          labelId="select-captain-label"
-                          id="select-captain"
-                          value={teamData.captain._id}
-                          onChange={handleCaptainSelectChange}
-                          label="Captain"
-                        >
-                          {!teamData.players.some(
-                            (player) => player._id === teamData.captain._id
-                          ) ? (
-                            <MenuItem value={teamData.captain._id}>
-                              <strong>{teamData.captain.name}</strong>
-                            </MenuItem>
-                          ) : null}
+                        <ListItemText
+                          primary={`${index + 1}. ${player.name}`}
+                          sx={{
+                            color: "secondary.main",
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Typography>No players on this team.</Typography>
+                )}
+              </Box>
 
-                          {teamData.players?.length > 0 &&
-                            teamData.players.map((player) => (
-                              <MenuItem key={player._id} value={player._id}>
-                                {player._id === team.captain._id ? (
-                                  <strong>{player.name}</strong>
-                                ) : (
-                                  player.name
-                                )}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                    </Grid2>
-                  </Box>
+              <Box display="flex" justifyContent="flex-end" gap={2}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate(-1)}
+                  sx={{
+                    backgroundColor: "primary.dark",
+                    "&:hover": {
+                      backgroundColor: "primary.lighter",
+                    },
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "primary.lighter",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Box>
+            </Stack>
+          </Box>
 
-                  <Grid2>
-                    <Typography
-                      variant="h5"
-                      sx={{ display: "flex", justifyContent: "center" }}
-                    >
-                      Players
-                    </Typography>
-                    <hr sx={{ color: "primary.lighter" }} />
-                    {teamData.players?.length > 0 ? (
-                      teamData.players.map((player, index) => (
-                        <Grid2 xs={12} md={6} key={player._id}>
-                          <List>
-                            <ListItem
-                              secondaryAction={
-                                <IconButton
-                                  edge="end"
-                                  aria-label="delete"
-                                  onClick={() => handleRemovePlayer(player)}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              }
-                            >
-                              <ListItemText
-                                primary={`${index + 1}.${"\u00A0".repeat(4)}${
-                                  player.name
-                                }`}
-                              />
-                            </ListItem>
-                          </List>
-                        </Grid2>
-                      ))
-                    ) : (
-                      <Typography>No Players</Typography>
-                    )}
-                  </Grid2>
-                  <Grid2 container justifyContent="flex-end">
-                    <Button
-                      className={classes.buttonSubmit}
-                      variant="contained"
-                      color="secondary"
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </Grid2>
-                </Grid2>
-              </Card>
-            </form>
-          </Paper>
-          <Grid2 container justifyContent="flex-end" sx={{ gap: 2 }}>
-            <Button variant="contained" onClick={() => navigate(-1)}>
-              Back
-            </Button>
-
+          <Box display="flex" justifyContent="flex-end">
             <Button
               variant="contained"
-              onClick={handleClickOpen}
-              sx={{ "&:hover": { backgroundColor: "darkred" } }}
+              color="error"
+              onClick={() => setOpen(true)}
+              sx={{ "&:hover": { backgroundColor: "#c62828" } }}
             >
               Delete Team
             </Button>
-          </Grid2>
-        </Grid2>
-      </Grow>
+          </Box>
+        </Stack>
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure you want to delete this team?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            This action cannot be undone. Please confirm if you want to
-            permanently delete this team.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDelete} color="error" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        {/* Confirm Delete Dialog */}
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Are you sure you want to delete this team?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              This action cannot be undone. Please confirm if you want to
+              permanently delete this team.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="error" autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Grow>
   );
 };
 
