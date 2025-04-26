@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import User from "../models/user.js";
-import Player from "../models/player.js";
 
 export const signin = async (req, res) => {
   const { email, password } = req.body;
@@ -12,6 +11,11 @@ export const signin = async (req, res) => {
 
     if (!existingUser)
       return res.status(404).json({ message: "User doesn't exist." });
+
+    if (!existingUser.password)
+      return res.status(400).json({
+        message: "This account uses Google Sign-In. Please log in with Google.",
+      });
 
     const isPasswordCorrect = await bcrypt.compare(
       password,
@@ -29,7 +33,7 @@ export const signin = async (req, res) => {
 
     res.status(200).json({ result: existingUser, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong." });
+    res.status(500).json({ message: "Something went wrong during login." });
   }
 };
 
@@ -50,41 +54,42 @@ export const signup = async (req, res) => {
       password: hashedPassword,
       name,
     });
-    await Player.create({
-      name,
-      user_id: result._id,
-    });
     const token = jwt.sign({ email: result.email, id: result._id }, "test", {
       expiresIn: "1h",
     });
 
     res.status(200).json({ result, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong." });
+    res.status(500).json({ message: "Something went wrong during signup." });
   }
 };
 
 export const googlesignin = async (req, res) => {
-  const { email, name } = req.body;
+  const { email, name, googleId, imageURL } = req.body;
   const newName = name.trim();
 
   try {
-    let result = await User.findOne({ email });
-    // check if the google user has a mongo user, if not then create user and player
-    if (!result) {
-      result = await User.create({ email, name: newName });
-      await Player.create({ name: newName, user_id: result._id });
-    } else {
-      const existingPlayer = await Player.findOne({ user_id: result._id });
+    let user = await User.findOne({ email });
 
-      if (!existingPlayer) {
-        await Player.create({ name: newName, user_id: result.id });
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await user.save();
       }
+    } else {
+      user = await User.create({ email, name: newName, googleId, imageURL });
     }
 
-    res.status(200).json({ result });
+    // (Optional) Issue a token if you want automatic login
+    const token = jwt.sign({ email: user.email, id: user._id }, "test", {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ result: user, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong." });
+    res.status(500).json({
+      message: `Something went wrong during Google Sign In. ${error}`,
+    });
   }
 };
 

@@ -97,7 +97,7 @@ const Auth = ({ setIsAlert, setAlertMessage }) => {
     }
 
     try {
-      const result = { email: decoded.email, name: decoded.name };
+      const result = { email: decoded.email, name: decoded.name, imageURL: decoded.picture, googleId: decoded.sub };
 
       let response = {};
       response = await dispatch(googlesignin(result, navigate));

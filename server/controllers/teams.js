@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Team from "../models/team.js";
-import Player from "../models/player.js";
+import User from "../models/user.js";
 import crypto from "crypto";
 
 const generateTeamCode = () => {
@@ -13,9 +13,8 @@ export const getTeams = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID format" });
     }
 
-    const player = await Player.findOne({ user_id: req.userId });
     const teams = await Team.find({
-      $or: [{ captain: player.id }, { players: player.id }],
+      $or: [{ captain: req.userId }, { players: req.userId }],
     }).populate("captain players");
 
     res.status(200).json(teams.reverse());
@@ -41,7 +40,7 @@ export const getTeam = async (req, res) => {
 
 export const createTeam = async (req, res) => {
   const team = req.body;
-  const captain = await Player.findOne({ user_id: req.userId });
+  const captain = await User.findById(req.userId);
   const updatedTeam = {
     name: team.name,
     captain,
@@ -66,7 +65,7 @@ export const editTeam = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send("Team not found");
-  if (newTeam.oldCaptain.user_id !== userId)
+  if (newTeam.oldCaptain._id !== userId)
     return res.status(404).send("Unauthorized");
 
   let newPlayers = newTeam.players;
@@ -113,9 +112,9 @@ export const joinTeam = async (req, res) => {
   if (!team)
     return res.status(404).json({ message: `No Team with code: ${code}` });
 
-  const player = await Player.findOne({ user_id: req.userId });
+  const player = await User.findById(req.userId);
 
-  if (!team.players.includes(player._id)) {
+  if (!team.players.includes(req.userId)) {
     team.players.push(player);
     const updatedTeam = await Team.findByIdAndUpdate(team.id, team, {
       new: true,

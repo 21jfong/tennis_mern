@@ -6,7 +6,7 @@ const matchSchema = mongoose.Schema({
   ],
   date: { type: Date, default: new Date() },
   players: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Player", required: true },
+    { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   ],
   score: { type: String, required: true },
 });
