@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -18,6 +18,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const player = useSelector((state) => state.player);
+  const [user] = useState(JSON.parse(localStorage.getItem("profile")));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +48,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
         mb={5}
       >
         <Avatar
-          src={player?.profilePicture || ""}
+          src={user?.result?.imageURL || ""}
           alt={player?.name || "Player"}
           sx={{
             width: 150,
