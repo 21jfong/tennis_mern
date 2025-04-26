@@ -4,9 +4,10 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv'
 
-import userRoutes from "./routes/users.js"
+import authRoutes from "./routes/auth.js"
 import teamsRoutes from "./routes/teams.js"
 import matchesRoutes from "./routes/matches.js"
+import playerRoutes from "./routes/player.js"
 
 dotenv.config();
 const app = express();
@@ -22,7 +23,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // goes to localhost:5000/posts
-app.use('/user', userRoutes);
+app.use('/user', authRoutes);
+app.use('/player', playerRoutes);
 app.use('/my-teams', teamsRoutes);
 app.use('/', matchesRoutes);
 
