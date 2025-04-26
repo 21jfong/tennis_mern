@@ -76,7 +76,7 @@ const Team = ({ setIsAlert, setAlertMessage }) => {
               </Typography>
             </Box>
             <Box display="flex" gap={2}>
-              {team?.captain?.user_id === user?.result?._id && (
+              {team?.captain?._id === user?.result?._id && (
                 <Button variant="contained" onClick={handleEdit}>
                   Edit Team
                 </Button>
