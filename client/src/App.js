@@ -10,6 +10,7 @@ import Home from './components/Home/Home';
 import Auth from './components/Auth/Auth';
 import Teams from './components/Teams/Teams';
 import Team from './components/Teams/Team/Team';
+import Profile from './components/Profile/Profile';
 import CreateTeam from './components/Teams/Team/Actions/CreateTeam';
 import EditTeam from './components/Teams/Team/Actions/EditTeam';
 import JoinTeam from './components/Teams/Team/Actions/JoinTeam';
@@ -39,6 +40,8 @@ const App = () => {
               <Route path="/my-teams/:id" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Team setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
             
               <Route path="/:id/matches/create-match" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateMatch setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
+            
+              <Route path="/player/:id" exact element={<Container className={classes.mainContainer}><Profile setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container>} />
             </Routes>
             {(isAlert && alertMessage) && (
               <Alert
