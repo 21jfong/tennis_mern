@@ -75,7 +75,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
       {/* Main Info Section */}
       <Grid2 container spacing={4}>
         {/* Left Info */}
-        <Grid2 item xs={12} md={6}>
+        <Grid2 xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 3 }}>
             <Stack spacing={2}>
               <Box>
@@ -99,7 +99,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
         </Grid2>
 
         {/* Right Info */}
-        <Grid2 item xs={12} md={6}>
+        <Grid2 xs={12} md={6}>
           <Paper elevation={2} sx={{ p: 3, height: "100%" }}>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">

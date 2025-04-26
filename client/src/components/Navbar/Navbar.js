@@ -20,7 +20,6 @@ import {
 } from "@mui/material";
 
 import racket_icon from "../../images/racket_icon.png";
-import { getPlayer } from "../../actions/player";
 
 function Navbar() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
@@ -29,8 +28,6 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const player = useSelector((state) => state.player);
 
   const logout = () => {
     dispatch({ type: "LOGOUT" });
@@ -47,11 +44,6 @@ function Navbar() {
       if (decodedToken.exp * 1000 < new Date().getTime()) logout();
     }
 
-    const fetchData = async () => {
-      const playerRes = await dispatch(getPlayer(id));
-    };
-
-    fetchData();
     setUser(JSON.parse(localStorage.getItem("profile")));
   }, [location]);
 
@@ -203,7 +195,7 @@ function Navbar() {
                     sx={{ textAlign: "center" }}
                     component={Link}
                     size="sm"
-                    to={`/player/${player._id}`}
+                    to={user?.result?._id ? `/player/${user?.result?._id}` : "/"}
                     color="secondary"
                   >
                     Profile

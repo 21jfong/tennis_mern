@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import Player from "../models/player.js";
+import User from "../models/user.js";
 
-export const getPlayer = async (req, res) => {
+export const getUser = async (req, res) => {
   const { id } = req.params;
 
   try {
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).json({ message: "No player with that ID." });
 
-    const player = await Player.findById(id);
+    const player = await User.findById(id);
 
     res.status(200).json(player);
   } catch (error) {
