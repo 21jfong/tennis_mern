@@ -22,10 +22,7 @@ jobs:
           username: ${{ secrets.VULTR_SERVER_USER }}
           key: ${{ secrets.VULTR_SSH_PRIVATE_KEY }}
           script: |
-            echo "Starting deploy..."
-            cd /home/jordan/tennis_mern/server   # <-- your server project path
-            git fetch --all
-            git reset --hard origin/main   # safer in case you force push
-            npm install                     # install new deps if any
-            pm2 reload tennis-backend       # or pm2 restart all
-            echo "Deploy complete ✅"
+            echo "Connected to server successfully ✅"
+            uname -a
+            whoami
+            uptime
