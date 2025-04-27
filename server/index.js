@@ -27,7 +27,7 @@ app.use("/my-teams", teamsRoutes);
 app.use("/", matchesRoutes);
 
 app.get("/", (req, res) => {
-  res.send("hello to tennis api");
+  res.send("Accessing TennisTrack API");
 });
 
 const PORT = process.env.PORT || 5000;
