@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Typography,
@@ -10,6 +10,7 @@ import {
   Divider,
   Grid2,
   Paper,
+  Button,
 } from "@mui/material";
 
 import { getPlayer } from "../../actions/player";
@@ -19,6 +20,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
   const { id } = useParams();
   const player = useSelector((state) => state.player);
   const [user] = useState(JSON.parse(localStorage.getItem("profile")));
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +69,18 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
           <Typography variant="h6" color="primary.dark" mt={1}>
             {player?.location || "Unknown Location"}
           </Typography>
+
+          {/* Edit Button appears only for own profile */}
+          {user?.result?._id === player?._id && (
+            <Button
+              variant="outlined"
+              color="primary"
+              sx={{ mt: 2 }}
+              onClick={() => navigate(`edit`)}
+            >
+              Edit Profile
+            </Button>
+          )}
         </Box>
       </Box>
 

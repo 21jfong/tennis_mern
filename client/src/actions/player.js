@@ -10,3 +10,13 @@ export const getPlayer = (id) => async (dispatch) => {
     return error;
   }
 };
+
+export const updatePlayer = (id) => async (dispatch) => {
+  try {
+    const { data } = await api.editPlayer(id);
+
+    dispatch({ type: PLAYER_ACTIONS.UPDATE, payload: data });
+  } catch (error) {
+    return error;
+  }
+};

@@ -10,12 +10,14 @@ import Home from './components/Home/Home';
 import Auth from './components/Auth/Auth';
 import Teams from './components/Teams/Teams';
 import Team from './components/Teams/Team/Team';
-import Profile from './components/Profile/Profile';
 import CreateTeam from './components/Teams/Team/Actions/CreateTeam';
 import EditTeam from './components/Teams/Team/Actions/EditTeam';
 import JoinTeam from './components/Teams/Team/Actions/JoinTeam';
 
 import CreateMatch from './components/Matches/Match/Actions/CreateMatch';
+
+import Profile from './components/Profile/Profile';
+import EditProfile from './components/Profile/Actions/EditProfile';
 
 import useStyles from './styles';
 
@@ -30,7 +32,7 @@ const App = () => {
           <Container maxwidth="lg">
             <Navbar />
             <Routes>
-              {/* <Route path="/" exact element={<Container className={classes.mainContainer}><Home /></Container>} /> */}
+              <Route path="/home" exact element={<Container className={classes.mainContainer}><Home /></Container>} />
               <Route path="/" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Teams setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
               <Route path="/auth" exact element={<Container className={classes.mainContainer}><Auth setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container>} />
               <Route path="/my-teams" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Teams setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
@@ -42,6 +44,7 @@ const App = () => {
               <Route path="/:id/matches/create-match" exact element={<ProtectedRoute><Container className={classes.mainContainer}><CreateMatch setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
             
               <Route path="/player/:id" exact element={<Container className={classes.mainContainer}><Profile setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container>} />
+              <Route path="/player/:id/edit" exact element={<ProtectedRoute><Container className={classes.mainContainer}><EditProfile setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
             </Routes>
             {(isAlert && alertMessage) && (
               <Alert
