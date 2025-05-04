@@ -81,11 +81,9 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updateRes = await dispatch(updatePlayer(id, formData));
-    if (updateRes?.status === 200) {
-      navigate(`/players/${id}`);
-    } else {
-      checkForAlert(updateRes);
-    }
+
+    checkForAlert(updateRes);
+    navigate(`/player/${id}`);
   };
 
   const handleCancel = () => {

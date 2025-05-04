@@ -11,9 +11,9 @@ export const getPlayer = (id) => async (dispatch) => {
   }
 };
 
-export const updatePlayer = (id) => async (dispatch) => {
+export const updatePlayer = (id, player) => async (dispatch) => {
   try {
-    const { data } = await api.editPlayer(id);
+    const { data } = await api.editPlayer(id, player);
 
     dispatch({ type: PLAYER_ACTIONS.UPDATE, payload: data });
   } catch (error) {

@@ -128,6 +128,30 @@ function Navbar() {
                   My Teams
                 </Typography>
               </MenuItem>
+
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography
+                  sx={{ textAlign: "center", textDecoration: "none" }}
+                  variant="contained"
+                  color="secondary"
+                  component={Link}
+                  to="/search"
+                >
+                  Search Players
+                </Typography>
+              </MenuItem>
+
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography
+                  sx={{ textAlign: "center", textDecoration: "none" }}
+                  variant="contained"
+                  color="secondary"
+                  component={Link}
+                  to={user?.result?._id ? `/player/${user?.result?._id}` : "/"}
+                >
+                  Profile
+                </Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <Typography
@@ -155,6 +179,31 @@ function Navbar() {
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 My Teams
+              </Button>
+            </Link>
+          </Box>
+
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            <Link to="/search" style={{ textDecoration: "none" }}>
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: "white", display: "block" }}
+              >
+                Search Players
+              </Button>
+            </Link>
+          </Box>
+
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            <Link
+              to={user?.result?._id ? `/player/${user?.result?._id}` : "/"}
+              style={{ textDecoration: "none" }}
+            >
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: "white", display: "block" }}
+              >
+                Profile
               </Button>
             </Link>
           </Box>
@@ -190,17 +239,22 @@ function Navbar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography
-                    sx={{ textAlign: "center" }}
-                    component={Link}
-                    size="sm"
-                    to={user?.result?._id ? `/player/${user?.result?._id}` : "/"}
-                    color="secondary"
-                  >
-                    Profile
-                  </Typography>
-                </MenuItem>
+                {user?.result?._id && (
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography
+                      sx={{ textAlign: "center" }}
+                      component={Link}
+                      size="sm"
+                      to={
+                        user?.result?._id ? `/player/${user?.result?._id}` : "/"
+                      }
+                      color="secondary"
+                    >
+                      Account Settings
+                    </Typography>
+                  </MenuItem>
+                )}
+
                 <MenuItem onClick={handleCloseUserMenu}>
                   {user ? (
                     <Typography

@@ -8,11 +8,8 @@ import {
   Stack,
   Box,
   Divider,
-  Grid2,
-  Paper,
   Button,
 } from "@mui/material";
-
 import { getPlayer } from "../../actions/player";
 
 const Profile = ({ setIsAlert, setAlertMessage }) => {
@@ -47,10 +44,11 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
         alignItems="center"
         justifyContent="center"
         textAlign={{ xs: "center", md: "left" }}
-        mb={5}
+        mt={6}
+        mb={8}
       >
         <Avatar
-          src={user?.result?.imageURL || ""}
+          src={player?.imageURL || ""}
           alt={player?.name || "Player"}
           sx={{
             width: 150,
@@ -58,6 +56,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             mr: { md: 4 },
             mb: { xs: 2, md: 0 },
             bgcolor: "primary.lighter",
+            fontSize: 48,
           }}
         >
           {player?.name ? player.name.charAt(0) : "P"}
@@ -70,13 +69,12 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             {player?.location || "Unknown Location"}
           </Typography>
 
-          {/* Edit Button appears only for own profile */}
           {user?.result?._id === player?._id && (
             <Button
               variant="outlined"
               color="primary"
               sx={{ mt: 2 }}
-              onClick={() => navigate(`edit`)}
+              onClick={() => navigate("edit")}
             >
               Edit Profile
             </Button>
@@ -84,48 +82,37 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
         </Box>
       </Box>
 
-      <Divider sx={{ my: 4 }} />
+      <Divider sx={{ mb: 6 }} />
 
-      {/* Main Info Section */}
-      <Grid2 container spacing={4}>
-        {/* Left Info */}
-        <Grid2 xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Stack spacing={2}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Racket
-                </Typography>
-                <Typography variant="body1">
-                  {player?.racket || "Not specified"}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  UTR
-                </Typography>
-                <Typography variant="body1">
-                  {player?.utr ? player.utr : "No UTR available"}
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </Grid2>
+      {/* Info Section */}
+      <Stack spacing={5}>
+        <Box>
+          <Typography variant="h6" color="primary.main" gutterBottom>
+            Racket
+          </Typography>
+          <Typography variant="body1">
+            {player?.racket || "Not specified"}
+          </Typography>
+        </Box>
 
-        {/* Right Info */}
-        <Grid2 xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 3, height: "100%" }}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                About Me
-              </Typography>
-              <Typography variant="body1" mt={1}>
-                {player?.bio || "This player hasn't written a bio yet."}
-              </Typography>
-            </Box>
-          </Paper>
-        </Grid2>
-      </Grid2>
+        <Box>
+          <Typography variant="h6" color="primary.main" gutterBottom>
+            UTR
+          </Typography>
+          <Typography variant="body1">
+            {player?.utr ? player.utr : "No UTR available"}
+          </Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" color="primary.main" gutterBottom>
+            About Me
+          </Typography>
+          <Typography variant="body1">
+            {player?.bio || "This player hasn't written a bio yet."}
+          </Typography>
+        </Box>
+      </Stack>
     </Container>
   );
 };

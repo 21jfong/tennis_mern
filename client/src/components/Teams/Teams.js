@@ -104,7 +104,7 @@ const Teams = ({ setIsAlert, setAlertMessage }) => {
               ))}
             </Stack>
           ) : (
-            <Typography variant="h6" color="text.secondary">
+            <Typography variant="h6" color="primary.main">
               No Teams Available
             </Typography>
           )}

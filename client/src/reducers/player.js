@@ -6,7 +6,7 @@ const reduce = (user = [], action) => {
     case PLAYER_ACTIONS.CREATE:
       return [...user, action.payload];
     case PLAYER_ACTIONS.UPDATE:
-      return [...user, action.payload];
+      return action.payload;
     case PLAYER_ACTIONS.DELETE:
       return user.filter((team) => team._id !== action.payload);
     default:

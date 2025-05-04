@@ -18,26 +18,26 @@ export const getUser = async (req, res) => {
 
 export const editUser = async (req, res) => {
   const { id } = req.params;
-  const newPlayer = req.body;
+  const updateFields = req.body;
 
   try {
-    if (!mongoose.Types.ObjectId.isValid(id))
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "No player with that ID." });
+    }
 
-    const updatedPlayer = await User.findByIdAndUpdate(
-      id,
-      {
-        name: newPlayer.name,
-        email: newPlayer.email,
-        password: newPlayer.password,
-      },
-      { new: true }
-    );
+    const updatedPlayer = await User.findByIdAndUpdate(id, updateFields, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedPlayer) {
+      return res.status(404).json({ message: "User not found." });
+    }
 
     res.json(updatedPlayer);
   } catch (error) {
     res
-      .status(404)
-      .json({ message: `Error finding and editing player with id: ${error}` });
+      .status(500)
+      .json({ message: `Error updating player: ${error.message}` });
   }
 };

@@ -39,5 +39,5 @@ export const checkHealth = () => API.get("/user/health");
 
 // User API
 export const fetchPlayer = (id) => API.get(`/player/${id}`);
-export const editPlayer = (id) => API.post(`/player/${id}/edit`);
+export const editPlayer = (id, player) => API.post(`/player/${id}/edit`, player);
 export const deletePlayer = (id) => API.delete(`/player/${id}/delete`);
