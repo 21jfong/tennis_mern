@@ -21,6 +21,8 @@ import {
 
 import racket_icon from "../../images/racket_icon.png";
 
+import { getPlayer } from "../../actions/player";
+
 function Navbar() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -28,12 +30,14 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const player = useSelector((state) => state.player);
 
   const logout = () => {
     dispatch({ type: "LOGOUT" });
     googleLogout();
     navigate("/");
     setUser(null);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -43,6 +47,11 @@ function Navbar() {
 
       if (decodedToken.exp * 1000 < new Date().getTime()) logout();
     }
+    const fetchData = async () => {
+      await dispatch(getPlayer(user?.result?._id));
+    };
+
+    fetchData();
 
     setUser(JSON.parse(localStorage.getItem("profile")));
   }, [location]);
@@ -218,7 +227,10 @@ function Navbar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Avatar" src={user?.result?.imageURL}>
+                  <Avatar
+                    alt="Avatar"
+                    src={player?.imageURL ?? user?.result?.imageUrl}
+                  >
                     {user?.result?.name.charAt(0)}
                   </Avatar>
                 </IconButton>

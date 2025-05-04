@@ -73,9 +73,6 @@ app.post("/upload", upload.single("image"), (req, res) => {
 
 // Basic route
 app.get("/", (req, res) => {
-  res.send("hello to tennis api");
-});
-app.get("/", (req, res) => {
   res.send("Accessing TennisTrack API");
 });
 

@@ -27,7 +27,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
     racket: "",
     utr: "",
     bio: "",
-    image: "", // base64 image string
+    imageURL: "", // Cloudinary URL will be stored here
   });
 
   const [preview, setPreview] = useState(""); // For avatar preview
@@ -49,7 +49,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
         racket: player.racket || "",
         utr: player.utr || "",
         bio: player.bio || "",
-        image: player.imageURL || "",
+        imageURL: player.imageURL || "",
       });
       setPreview(player.imageURL || "");
     }
@@ -71,17 +71,38 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
         setPreview(reader.result);
+        handleImageUpload(file); // Upload to backend
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Function to upload image to backend, which then uploads to Cloudinary
+  const handleImageUpload = (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.url) {
+          console.log("Image uploaded successfully:", data.url);
+          // Save the URL in formData so it gets submitted with the profile
+          setFormData((prev) => ({ ...prev, imageURL: data.url }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading image:", error);
+      });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updateRes = await dispatch(updatePlayer(id, formData));
-
     checkForAlert(updateRes);
     navigate(`/player/${id}`);
   };
