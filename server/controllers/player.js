@@ -19,8 +19,10 @@ export const getUser = async (req, res) => {
 export const editUser = async (req, res) => {
   const { id } = req.params;
   const updateFields = req.body;
+  const userId = req.userId;
 
   try {
+    if (id !== userId) return res.status(401).send("Unauthorized");
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "No player with that ID." });
     }
