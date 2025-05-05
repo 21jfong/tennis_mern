@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { Edit as EditIcon } from "@mui/icons-material";
 import { getAuthPlayer, updateAuthPlayer } from "../../../actions/authPlayer";
+import heic2any from "heic2any";
+import imageCompression from "browser-image-compression";
 
 const EditProfile = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
@@ -27,19 +29,30 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
     racket: "",
     utr: "",
     bio: "",
-    imageURL: "", // Cloudinary URL will be stored here
+    imageURL: "",
   });
+  const [preview, setPreview] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [preview, setPreview] = useState(""); // For avatar preview
-
+  // Clean up blob URLs on unmount or when preview changes
   useEffect(() => {
-    const fetchData = async () => {
-      const playerRes = await dispatch(getAuthPlayer(id));
-      checkForAlert(playerRes);
+    return () => {
+      if (preview && preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
     };
+  }, [preview]);
 
-    fetchData();
-  }, [id, dispatch]);
+  // Load existing player data
+  useEffect(() => {
+    dispatch(getAuthPlayer(id)).then((res) => {
+      if (res?.status && res.status !== 200) {
+        setAlertMessage(res.response.data.message);
+        setIsAlert(true);
+      }
+    });
+  }, [id, dispatch, setAlertMessage, setIsAlert]);
 
   useEffect(() => {
     if (player) {
@@ -55,10 +68,97 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
     }
   }, [player]);
 
-  const checkForAlert = (res) => {
-    if (res?.status && res.status !== 200) {
-      setAlertMessage(res.response.data.message);
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Detect HEIC
+    const isHeic =
+      file.type === "image/heic" ||
+      file.name.toLowerCase().endsWith(".heic") ||
+      file.name.toLowerCase().endsWith(".heif");
+
+    let processedFile = file;
+
+    if (isHeic) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+        });
+        processedFile = new File(
+          [convertedBlob],
+          file.name.replace(/\.(heic|heif)$/i, ".jpeg"),
+          {
+            type: "image/jpeg",
+          }
+        );
+      } catch (err) {
+        console.error("HEIC conversion failed", err);
+      }
+    }
+
+    try {
+      // Compress and resize image
+      const compressedFile = await imageCompression(processedFile, {
+        maxSizeMB: 1, // Max size in MB
+        maxWidthOrHeight: 1920, // Resize image if width or height exceeds this
+        useWebWorker: true,
+      });
+
+      // Save compressed image to state
+      setSelectedFile(compressedFile);
+
+      // Generate preview
+      const previewURL = URL.createObjectURL(compressedFile);
+      setPreview(previewURL);
+    } catch (err) {
+      console.error("Image compression failed", err);
+      // Fallback to using the original file
+      setSelectedFile(processedFile);
+      setPreview(URL.createObjectURL(processedFile));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let imageURL = formData.imageURL;
+
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        const uploadData = new FormData();
+        uploadData.append("image", selectedFile);
+
+        const response = await fetch(`${process.env.REACT_APP_API_URL}upload`, {
+          method: "POST",
+          body: uploadData,
+        });
+        const data = await response.json();
+
+        if (data.url) {
+          imageURL = data.url;
+        } else {
+          throw new Error("Upload failed: No URL returned");
+        }
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        setAlertMessage(err);
+        setIsAlert(true);
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
+    const payload = { ...formData, imageURL };
+    const updateRes = await dispatch(updateAuthPlayer(id, payload));
+    if (updateRes?.status && updateRes.status !== 200) {
+      setAlertMessage(updateRes.response.data.message);
       setIsAlert(true);
+    } else {
+      navigate(`/player/${id}`);
     }
   };
 
@@ -66,50 +166,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-        handleImageUpload(file); // Upload to backend
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Function to upload image to backend, which then uploads to Cloudinary
-  const handleImageUpload = (file) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    fetch("http://localhost:5000/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.url) {
-          console.log("Image uploaded successfully:", data.url);
-          // Save the URL in formData so it gets submitted with the profile
-          setFormData((prev) => ({ ...prev, imageURL: data.url }));
-        }
-      })
-      .catch((error) => {
-        console.error("Error uploading image:", error);
-      });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const updateRes = await dispatch(updateAuthPlayer(id, formData));
-    checkForAlert(updateRes);
-    navigate(`/player/${id}`);
-  };
-
-  const handleCancel = () => {
-    navigate(-1);
-  };
+  const handleCancel = () => navigate(-1);
 
   return (
     <Container maxWidth="sm">
@@ -118,13 +175,12 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
           Edit Profile
         </Typography>
 
-        {/* Avatar Upload */}
         <Box position="relative" display="flex" justifyContent="center" mb={3}>
           <Avatar
             src={preview}
             sx={{ width: 120, height: 120, bgcolor: "primary.lighter" }}
           >
-            {formData.name ? formData.name.charAt(0) : "P"}
+            {formData.name.charAt(0) || "P"}
           </Avatar>
           <IconButton
             component="label"
@@ -146,7 +202,6 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
           </IconButton>
         </Box>
 
-        {/* Form Fields */}
         <form onSubmit={handleSubmit}>
           <Stack spacing={3}>
             <TextField
@@ -186,18 +241,21 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
               rows={4}
               fullWidth
             />
-
-            {/* Buttons */}
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
-                variant="outlined"
-                color="secondary"
+                variant="contained"
                 onClick={handleCancel}
+                sx={{
+                  backgroundColor: "primary.dark",
+                  "&:hover": {
+                    backgroundColor: "primary.lighter",
+                  },
+                }}
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" color="primary">
-                Save Changes
+              <Button type="submit" variant="contained" disabled={isUploading}>
+                {isUploading ? "Uploading..." : "Save Changes"}
               </Button>
             </Stack>
           </Stack>
