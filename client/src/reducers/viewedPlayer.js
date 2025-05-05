@@ -1,13 +1,13 @@
-import { PLAYER_ACTIONS } from "../constants/actionTypes";
+import { VIEWED_PLAYER_ACTIONS } from "../constants/actionTypes";
 const reduce = (user = [], action) => {
   switch (action.type) {
-    case PLAYER_ACTIONS.FETCH:
+    case VIEWED_PLAYER_ACTIONS.FETCH:
       return action.payload;
-    case PLAYER_ACTIONS.CREATE:
+    case VIEWED_PLAYER_ACTIONS.CREATE:
       return [...user, action.payload];
-    case PLAYER_ACTIONS.UPDATE:
+    case VIEWED_PLAYER_ACTIONS.UPDATE:
       return action.payload;
-    case PLAYER_ACTIONS.DELETE:
+    case VIEWED_PLAYER_ACTIONS.DELETE:
       return user.filter((team) => team._id !== action.payload);
     default:
       return user;

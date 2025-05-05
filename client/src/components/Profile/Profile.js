@@ -10,18 +10,18 @@ import {
   Divider,
   Button,
 } from "@mui/material";
-import { getPlayer } from "../../actions/player";
+import { getViewedPlayer } from "../../actions/viewedPlayer";
 
 const Profile = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const player = useSelector((state) => state.player);
+  const viewedPlayer = useSelector((state) => state.viewedPlayer);
   const [user] = useState(JSON.parse(localStorage.getItem("profile")));
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      const playerRes = await dispatch(getPlayer(id));
+      const playerRes = await dispatch(getViewedPlayer(id));
       checkForAlert(playerRes);
     };
 
@@ -48,8 +48,8 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
         mb={8}
       >
         <Avatar
-          src={player?.imageURL || ""}
-          alt={player?.name || "Player"}
+          src={viewedPlayer?.imageURL || ""}
+          alt={viewedPlayer?.name || "Player"}
           sx={{
             width: 150,
             height: 150,
@@ -59,17 +59,17 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             fontSize: 48,
           }}
         >
-          {player?.name ? player.name.charAt(0) : "P"}
+          {viewedPlayer?.name ? viewedPlayer.name.charAt(0) : "P"}
         </Avatar>
         <Box>
           <Typography variant="h3" fontWeight="bold" color="black">
-            {player?.name || "Unnamed Player"}
+            {viewedPlayer?.name || "Unnamed Player"}
           </Typography>
           <Typography variant="h6" color="primary.dark" mt={1}>
-            {player?.location || "Unknown Location"}
+            {viewedPlayer?.location || "Unknown Location"}
           </Typography>
 
-          {user?.result?._id === player?._id && (
+          {user?.result?._id === viewedPlayer?._id && (
             <Button
               variant="outlined"
               color="primary"
@@ -91,7 +91,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             Racket
           </Typography>
           <Typography variant="body1">
-            {player?.racket || "Not specified"}
+            {viewedPlayer?.racket || "Not specified"}
           </Typography>
         </Box>
 
@@ -100,7 +100,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             UTR
           </Typography>
           <Typography variant="body1">
-            {player?.utr ? player.utr : "No UTR available"}
+            {viewedPlayer?.utr ? viewedPlayer.utr : "No UTR available"}
           </Typography>
         </Box>
 
@@ -109,7 +109,7 @@ const Profile = ({ setIsAlert, setAlertMessage }) => {
             About Me
           </Typography>
           <Typography variant="body1">
-            {player?.bio || "This player hasn't written a bio yet."}
+            {viewedPlayer?.bio || "This player hasn't written a bio yet."}
           </Typography>
         </Box>
       </Stack>

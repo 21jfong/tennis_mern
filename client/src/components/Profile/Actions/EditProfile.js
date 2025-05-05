@@ -13,7 +13,7 @@ import {
   Box,
 } from "@mui/material";
 import { Edit as EditIcon } from "@mui/icons-material";
-import { getPlayer, updatePlayer } from "../../../actions/player";
+import { getAuthPlayer, updateAuthPlayer } from "../../../actions/authPlayer";
 
 const EditProfile = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const playerRes = await dispatch(getPlayer(id));
+      const playerRes = await dispatch(getAuthPlayer(id));
       checkForAlert(playerRes);
     };
 
@@ -102,7 +102,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const updateRes = await dispatch(updatePlayer(id, formData));
+    const updateRes = await dispatch(updateAuthPlayer(id, formData));
     checkForAlert(updateRes);
     navigate(`/player/${id}`);
   };

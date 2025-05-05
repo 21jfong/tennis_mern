@@ -21,7 +21,7 @@ import {
 
 import racket_icon from "../../images/racket_icon.png";
 
-import { getPlayer } from "../../actions/player";
+import { getAuthPlayer } from "../../actions/authPlayer";
 
 function Navbar() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
@@ -30,7 +30,7 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const player = useSelector((state) => state.player);
+  const authPlayer = useSelector((state) => state.authPlayer);
 
   const logout = () => {
     dispatch({ type: "LOGOUT" });
@@ -48,7 +48,7 @@ function Navbar() {
       if (decodedToken.exp * 1000 < new Date().getTime()) logout();
     }
     const fetchData = async () => {
-      await dispatch(getPlayer(user?.result?._id));
+      await dispatch(getAuthPlayer(user?.result?._id));
     };
 
     fetchData();
@@ -183,7 +183,7 @@ function Navbar() {
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="Avatar"
-                    src={player?.imageURL || user?.result?.imageUrl}
+                    src={authPlayer?.imageURL || user?.result?.imageUrl}
                   >
                     {user?.result?.name.charAt(0)}
                   </Avatar>
