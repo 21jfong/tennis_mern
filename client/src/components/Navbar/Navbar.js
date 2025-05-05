@@ -40,21 +40,27 @@ function Navbar() {
     window.location.reload();
   };
 
+  // Step 1: Load user from localStorage when component mounts
   useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    setUser(profile);
+  }, [location]); // rerun on route changes
+
+  // Step 2: Once user is loaded, fetch player data
+  useEffect(() => {
+    if (!user?.result?._id) return;
+
     const token = user?.token;
     if (token) {
       const decodedToken = jwtDecode(token);
-
-      if (decodedToken.exp * 1000 < new Date().getTime()) logout();
+      if (decodedToken.exp * 1000 < new Date().getTime()) {
+        logout();
+        return;
+      }
     }
-    const fetchData = async () => {
-      await dispatch(getAuthPlayer(user?.result?._id));
-    };
 
-    fetchData();
-
-    setUser(JSON.parse(localStorage.getItem("profile")));
-  }, [location]);
+    dispatch(getAuthPlayer(user.result._id));
+  }, [user, dispatch]);
 
   // UI handlers
   const handleOpenNavMenu = (e) => setAnchorElNav(e.currentTarget);
@@ -181,11 +187,9 @@ function Navbar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="Avatar"
-                    src={authPlayer?.imageURL || user?.result?.imageUrl}
-                  >
-                    {user?.result?.name.charAt(0)}
+                  <Avatar alt="Avatar" src={authPlayer?.imageURL}>
+                    {authPlayer?.name?.charAt(0) ||
+                      user?.result?.name?.charAt(0)}
                   </Avatar>
                 </IconButton>
               </Tooltip>
