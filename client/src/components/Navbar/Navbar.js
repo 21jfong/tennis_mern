@@ -1,60 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, AppBar, Toolbar, Container, IconButton, Menu, Avatar, Tooltip, MenuItem } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import { googleLogout } from '@react-oauth/google';
+import React, { useState, useEffect } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { googleLogout } from "@react-oauth/google";
+import {
+  Box,
+  Typography,
+  Button,
+  AppBar,
+  Toolbar,
+  Container,
+  IconButton,
+  Menu,
+  Avatar,
+  Tooltip,
+  MenuItem,
+} from "@mui/material";
 
-import racket_icon from '../../images/racket_icon.png';
+import racket_icon from "../../images/racket_icon.png";
+
+import { getAuthPlayer } from "../../actions/authPlayer";
 
 function Navbar() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const authPlayer = useSelector((state) => state.authPlayer);
 
   const logout = () => {
-    dispatch({ type: "LOGOUT" })
+    dispatch({ type: "LOGOUT" });
     googleLogout();
-    navigate('/');
+    navigate("/");
     setUser(null);
-  }
+    window.location.reload();
+  };
 
+  // Step 1: Load user from localStorage when component mounts
   useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    setUser(profile);
+  }, [location]); // rerun on route changes
+
+  // Step 2: Once user is loaded, fetch player data
+  useEffect(() => {
+    if (!user?.result?._id) return;
+
     const token = user?.token;
     if (token) {
       const decodedToken = jwtDecode(token);
-
-      if (decodedToken.exp * 1000 < new Date().getTime()) logout();
+      if (decodedToken.exp * 1000 < new Date().getTime()) {
+        logout();
+        return;
+      }
     }
 
-    setUser(JSON.parse(localStorage.getItem('profile')));
-  }, [location]);
+    dispatch(getAuthPlayer(user.result._id));
+  }, [user, dispatch]);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  // UI handlers
+  const handleOpenNavMenu = (e) => setAnchorElNav(e.currentTarget);
+  const handleOpenUserMenu = (e) => setAnchorElUser(e.currentTarget);
+  const handleCloseNavMenu = () => setAnchorElNav(null);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box component="img" src={racket_icon} alt="logo" sx={{ marginLeft: '15px', width: '50px', height: 'auto' }} />
+          <Box
+            component="img"
+            src={racket_icon}
+            alt="logo"
+            sx={{ marginLeft: "15px", width: "50px", height: "auto" }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -62,49 +85,53 @@ function Navbar() {
             href="/"
             sx={{
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
+              display: { xs: "none", md: "flex" },
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             Tennis Track
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
+          {/* Mobile menu */}
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <IconButton onClick={handleOpenNavMenu} color="inherit">
               <MenuIcon />
             </IconButton>
             <Menu
-              id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={{ display: { xs: 'block', md: 'none' } }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
             >
-              <MenuItem onClick={handleCloseNavMenu}>
-                <Typography sx={{ textAlign: 'center', textDecoration: 'none' }} variant="contained" color="secondary" component={Link} to='/my-teams'>My Teams</Typography>
+              <MenuItem
+                onClick={handleCloseNavMenu}
+                component={Link}
+                to="/my-teams"
+              >
+                <Typography textAlign="center">My Teams</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={handleCloseNavMenu}
+                component={Link}
+                to="/search"
+              >
+                <Typography textAlign="center">Search Players</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={handleCloseNavMenu}
+                component={Link}
+                to={user?.result?._id ? `/player/${user.result._id}` : "/"}
+              >
+                <Typography textAlign="center">Profile</Typography>
               </MenuItem>
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
@@ -112,58 +139,87 @@ function Navbar() {
             href="/"
             sx={{
               mr: 2,
-              display: { xs: 'flex', md: 'none' },
+              display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: 'monospace',
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             Track
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Link to="/my-teams" style={{ textDecoration: 'none' }}>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                My Teams
-              </Button>
-            </Link>
+
+          {/* Desktop menu */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              gap: "10px",
+            }}
+          >
+            <Button component={Link} to="/my-teams" sx={{ color: "white" }}>
+              My Teams
+            </Button>
+            <Button component={Link} to="/search" sx={{ color: "white" }}>
+              Search Players
+            </Button>
+            <Button
+              component={Link}
+              to={user?.result?._id ? `/player/${user.result._id}` : "/"}
+              sx={{ color: "white" }}
+            >
+              Profile
+            </Button>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Typography variant="h6" sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>{user?.result?.name}</Typography>
+          {/* User name and avatar */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {user && (
+              <Typography
+                variant="h6"
+                sx={{ display: { xs: "none", md: "flex" } }}
+              >
+                {user.result.name}
+              </Typography>
+            )}
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Avatar" src={user?.result?.imageURL}>{user?.result?.name.charAt(0)}</Avatar>
+                  <Avatar alt="Avatar" src={authPlayer?.imageURL}>
+                    {authPlayer?.name?.charAt(0) ||
+                      user?.result?.name?.charAt(0)}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
+                sx={{ mt: "45px" }}
                 anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
+                {user?.result?._id && (
+                  <MenuItem
+                    onClick={handleCloseUserMenu}
+                    component={Link}
+                    to={`/player/${user.result._id}`}
+                  >
+                    <Typography textAlign="center">Account Settings</Typography>
+                  </MenuItem>
+                )}
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }} color="secondary">Profile</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>
-                  {user ? (<Typography sx={{ textAlign: 'center', textDecoration: 'none' }} size="sm" variant="contained" color="secondary" onClick={logout}>Log out</Typography>) :
-                    (<Typography sx={{ textAlign: 'center', textDecoration: 'none' }} component={Link} size="sm" to="/auth" variant="contained" color="secondary">Sign in</Typography>)}
+                  {user ? (
+                    <Typography onClick={logout} textAlign="center">
+                      Log out
+                    </Typography>
+                  ) : (
+                    <Typography component={Link} to="/auth" textAlign="center">
+                      Sign in
+                    </Typography>
+                  )}
                 </MenuItem>
               </Menu>
             </Box>

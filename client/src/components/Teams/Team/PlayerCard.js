@@ -100,7 +100,7 @@ const PlayerCard = ({ players, matches }) => {
 
               <Button
                 component={React_Link}
-                to={`/`}
+                to={`/player/${player._id}`}
                 sx={{
                   minWidth: { xs: "32px", md: "64px" },
                   height: { xs: "32px", md: "32px" },
