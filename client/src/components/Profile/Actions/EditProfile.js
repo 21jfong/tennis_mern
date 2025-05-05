@@ -19,7 +19,7 @@ const EditProfile = ({ setIsAlert, setAlertMessage }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const player = useSelector((state) => state.player);
+  const player = useSelector((state) => state.authPlayer);
 
   const [formData, setFormData] = useState({
     name: "",
