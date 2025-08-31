@@ -14,6 +14,7 @@ import authRoutes from "./routes/auth.js";
 import teamsRoutes from "./routes/teams.js";
 import matchesRoutes from "./routes/matches.js";
 import playerRoutes from "./routes/player.js";
+import trackingRoutes from "./routes/tracking.js";
 
 dotenv.config();
 const app = express();
@@ -71,6 +72,7 @@ app.use(cors(corsOptions));
 app.use("/user", authRoutes);
 app.use("/player", playerRoutes);
 app.use("/my-teams", teamsRoutes);
+app.use("/tracking", trackingRoutes);
 app.use("/", matchesRoutes);
 
 // Image upload endpoint

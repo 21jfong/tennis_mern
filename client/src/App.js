@@ -20,6 +20,7 @@ import Profile from './components/Profile/Profile';
 import EditProfile from './components/Profile/Actions/EditProfile';
 
 import useStyles from './styles';
+import Tracking from './components/Tracking/Tracking';
 
 const App = () => {
   const classes = useStyles();
@@ -45,6 +46,7 @@ const App = () => {
             
               <Route path="/player/:id" exact element={<Container className={classes.mainContainer}><Profile setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container>} />
               <Route path="/player/:id/edit" exact element={<ProtectedRoute><Container className={classes.mainContainer}><EditProfile setIsAlert={setIsAlert} setAlertMessage={setAlertMessage} /></Container></ProtectedRoute>} />
+              <Route path="/tracking" exact element={<ProtectedRoute><Container className={classes.mainContainer}><Tracking /></Container></ProtectedRoute>} />
             </Routes>
             {(isAlert && alertMessage) && (
               <Alert

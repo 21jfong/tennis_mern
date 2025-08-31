@@ -1,3 +1,9 @@
+
+
+
+
+
+
 import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
@@ -12,6 +18,11 @@ API.interceptors.request.use((req) => {
 
   return req;
 });
+
+// Tracking API
+export const fetchUserMonthStats = (userId, month) => API.get(`/tracking/user/${userId}/${month}`);
+export const fetchTeamMonthStats = (teamId, month) => API.get(`/tracking/team/${teamId}/${month}`);
+export const saveUserDayStat = (data) => API.post(`/tracking/user`, data);
 
 // Team API
 export const fetchTeams = (user) => API.get("/my-teams", user);
