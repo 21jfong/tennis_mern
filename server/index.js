@@ -53,36 +53,18 @@ const upload = multer({
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 const allowedOrigins = process.env.ORIGIN?.split(",") || [];
-const normalizeOrigin = (origin) => {
-  if (!origin) return origin;
-  try {
-    const url = new URL(origin);
-    return `${url.protocol}//${url.hostname}`;
-  } catch {
-    return origin;
-  }
-};
-
 const corsOptions = {
   origin: (origin, callback) => {
-    const normalized = normalizeOrigin(origin);
-    if (!origin || allowedOrigins.includes(normalized)) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.error(
-        "❌ CORS blocked:",
-        origin,
-        "(normalized:",
-        normalized,
-        ")"
-      );
       callback(new Error("Not allowed by CORS"));
     }
   },
   methods: "GET,POST,PATCH,DELETE",
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 
 // Routes
