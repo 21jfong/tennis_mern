@@ -18,8 +18,8 @@ const MonthSidebar = ({ monthStats, selectedDate, onSelectDate }) => {
           const dateLabel = date.format("MMM D");
           const dateStr = date.format("YYYY-MM-DD");
           const stats = monthStats[dateStr] || {};
-          const nVal = stats.stat1 === undefined || stats.stat1 === '' ? '0' : stats.stat1;
-          const sVal = stats.stat2 === undefined || stats.stat2 === '' ? '0' : stats.stat2;
+          const nVal = stats.N === undefined || stats.N === null || stats.N === '' ? '0' : stats.N;
+          const sVal = stats.S === undefined || stats.S === null || stats.S === '' ? '0' : stats.S;
           tsv += `${dateLabel}\t${nVal}\t${sVal}\n`;
         }
     if (navigator.clipboard) {
@@ -87,8 +87,8 @@ const MonthSidebar = ({ monthStats, selectedDate, onSelectDate }) => {
               <Tooltip
                 key={dateStr}
                 title={
-                  stats.stat1 || stats.stat2
-                    ? `S1: ${stats.stat1 || "-"}, S2: ${stats.stat2 || "-"}`
+                  stats.N || stats.S
+                    ? `N: ${stats.N || "-"}, S: ${stats.S || "-"}`
                     : "No data"
                 }
                 arrow
@@ -146,8 +146,8 @@ const MonthSidebar = ({ monthStats, selectedDate, onSelectDate }) => {
                   rows.push(
                     <TableRow key={dateStr} selected={date.isSame(selectedDate, 'day')} sx={{ cursor: 'pointer' }} onClick={() => onSelectDate(date)}>
                       <TableCell sx={{ p: 0.5 }}>{date.format("MMM D")}</TableCell>
-                      <TableCell sx={{ p: 0.5 }}>{stats.stat1 || '-'}</TableCell>
-                      <TableCell sx={{ p: 0.5 }}>{stats.stat2 || '-'}</TableCell>
+                      <TableCell sx={{ p: 0.5 }}>{stats.N || '-'}</TableCell>
+                      <TableCell sx={{ p: 0.5 }}>{stats.S || '-'}</TableCell>
                     </TableRow>
                   );
                 }

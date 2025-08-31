@@ -8,40 +8,26 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import MonthSidebar from "./MonthSidebar";
 import { useSelector } from "react-redux";
-
-// Replace with real API calls
-const fetchStats = async (date) => {
-  // TODO: Fetch stats for the user and date from backend
-  return { stat1: '', stat2: '' };
-};
-const fetchMonthStats = async (month) => {
-  // TODO: Fetch all stats for the user for the month (YYYY-MM) from backend
-  return {};
-};
-const saveStats = async (date, stat1, stat2) => {
-  // TODO: Save stats for the user and date to backend
-  return true;
-};
+import { fetchUserMonthStats, fetchTeamMonthStats, saveUserDayStat } from '../../api';
 
 const Tracking = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [stat1, setStat1] = useState("");
-  const [stat2, setStat2] = useState("");
+  const [N, setN] = useState("");
+  const [S, setS] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [monthStats, setMonthStats] = useState({});
 
-  // Load stats for selected day
-  // Placeholder: get user and team info from Redux or localStorage
-  const user = JSON.parse(localStorage.getItem("profile"));
-  // TODO: Replace with real team/player fetching logic
-  const isCaptain = user?.result?.isCaptain || false; // Set this based on your real user/team data
-  const teamPlayers = []; // Fill with player objects: [{ _id, name }, ...]
 
-  // Placeholder: fetch all player stats for the month (simulate with empty data)
+  // Get user and team info
+  const user = JSON.parse(localStorage.getItem("profile"));
+  const userId = user?.result?._id;
+  const isCaptain = user?.result?.isCaptain || false;
+  const teamId = user?.result?.teamId || null;
+  const teamPlayers = user?.result?.teamPlayers || [];
+
+  // Player stats for captain/team view
   const [playerMonthStats, setPlayerMonthStats] = useState({});
-  // TODO: Fetch real player stats for the month
-  // playerMonthStats = { playerId: { 'YYYY-MM-DD': { stat1, stat2 }, ... }, ... }
 
   // Copy all players' stats for the month as TSV
   const handleCopyTeamStats = () => {
@@ -59,16 +45,16 @@ const Tracking = () => {
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = monthStart.date(d).format("YYYY-MM-DD");
         const stats = playerMonthStats[player._id]?.[dateStr] || {};
-        const nVal = stats.stat1 === undefined || stats.stat1 === '' ? '0' : stats.stat1;
-        tsv += `\t${nVal}`;
+  const nVal = stats.N === undefined || stats.N === null || stats.N === '' ? '0' : stats.N;
+  tsv += `\t${nVal}`;
       }
       tsv += '\n';
       tsv += player.name + ' (S)';
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = monthStart.date(d).format("YYYY-MM-DD");
         const stats = playerMonthStats[player._id]?.[dateStr] || {};
-        const sVal = stats.stat2 === undefined || stats.stat2 === '' ? '0' : stats.stat2;
-        tsv += `\t${sVal}`;
+  const sVal = stats.S === undefined || stats.S === null || stats.S === '' ? '0' : stats.S;
+  tsv += `\t${sVal}`;
       }
       tsv += '\n';
     });
@@ -83,36 +69,82 @@ const Tracking = () => {
       document.body.removeChild(textarea);
     }
   };
-  useEffect(() => {
-    const loadStats = async () => {
-      setLoading(true);
-      const stats = await fetchStats(selectedDate.format("YYYY-MM-DD"));
-      setStat1(stats.stat1 || "");
-      setStat2(stats.stat2 || "");
-      setLoading(false);
-    };
-    loadStats();
-  }, [selectedDate]);
 
-  // Load all stats for the month
+  // Load stats for selected day
+
+  // Auto-populate N and S from monthStats when selecting a date
+  useEffect(() => {
+    const stats = monthStats[selectedDate.format("YYYY-MM-DD")] || { N: '', S: '' };
+    setN(stats.N || "");
+    setS(stats.S || "");
+  }, [selectedDate, monthStats]);
+
+
+  // Load all stats for the month (personal)
   useEffect(() => {
     const loadMonthStats = async () => {
+      if (!userId) return;
       const month = selectedDate.format("YYYY-MM");
-      const stats = await fetchMonthStats(month);
-      setMonthStats(stats);
+      try {
+        const res = await fetchUserMonthStats(userId, month);
+        // Transform array to object keyed by date
+        const arr = res.data || [];
+        const obj = {};
+        for (const entry of arr) {
+          obj[entry.date] = { N: entry.N, S: entry.S };
+        }
+        setMonthStats(obj);
+      } catch (err) {
+        setMonthStats({});
+      }
     };
     loadMonthStats();
-  }, [selectedDate]);
+  }, [selectedDate, userId]);
+
+  // Load all player stats for the month (captain/team)
+  useEffect(() => {
+    const loadPlayerMonthStats = async () => {
+      if (!isCaptain || !teamId) return;
+      const month = selectedDate.format("YYYY-MM");
+      try {
+        const res = await fetchTeamMonthStats(teamId, month);
+        // Transform array to nested object: { playerId: { date: {N, S} } }
+        const arr = res.data?.stats || [];
+        const players = res.data?.players || [];
+        const obj = {};
+        for (const player of players) {
+          obj[player._id] = {};
+        }
+        for (const entry of arr) {
+          if (obj[entry.user]) {
+            obj[entry.user][entry.date] = { N: entry.N, S: entry.S };
+          }
+        }
+        setPlayerMonthStats(obj);
+      } catch (err) {
+        setPlayerMonthStats({});
+      }
+    };
+    loadPlayerMonthStats();
+  }, [selectedDate, isCaptain, teamId]);
 
   const handleSave = async () => {
     setLoading(true);
-    const success = await saveStats(selectedDate.format("YYYY-MM-DD"), stat1, stat2);
-    setMessage(success ? "Saved!" : "Error saving stats.");
-    // Update monthStats in state for immediate UI feedback
-    setMonthStats((prev) => ({
-      ...prev,
-      [selectedDate.format("YYYY-MM-DD")]: { stat1, stat2 },
-    }));
+    try {
+      await saveUserDayStat({
+        userId,
+        date: selectedDate.format("YYYY-MM-DD"),
+        N,
+        S,
+      });
+      setMessage("Saved!");
+      setMonthStats((prev) => ({
+        ...prev,
+        [selectedDate.format("YYYY-MM-DD")]: { N, S },
+      }));
+    } catch (err) {
+      setMessage("Error saving stats.");
+    }
     setLoading(false);
     setTimeout(() => setMessage(""), 2000);
   };
@@ -157,8 +189,8 @@ const Tracking = () => {
             </LocalizationProvider>
             <TextField
               label="N"
-              value={stat1}
-              onChange={(e) => setStat1(e.target.value.replace(/[^\d-]/g, ""))}
+              value={N}
+              onChange={(e) => setN(e.target.value.replace(/[^\d-]/g, ""))}
               fullWidth
               margin="normal"
               InputProps={{
@@ -166,7 +198,7 @@ const Tracking = () => {
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="decrement N"
-                      onClick={() => setStat1((v) => String((parseInt(v) || 0) - 1))}
+                      onClick={() => setN((v) => String((parseInt(v) || 0) - 1))}
                       edge="end"
                       size="small"
                     >
@@ -174,7 +206,7 @@ const Tracking = () => {
                     </IconButton>
                     <IconButton
                       aria-label="increment N"
-                      onClick={() => setStat1((v) => String((parseInt(v) || 0) + 1))}
+                      onClick={() => setN((v) => String((parseInt(v) || 0) + 1))}
                       edge="end"
                       size="small"
                     >
@@ -186,8 +218,8 @@ const Tracking = () => {
             />
             <TextField
               label="S"
-              value={stat2}
-              onChange={(e) => setStat2(e.target.value.replace(/[^\d-]/g, ""))}
+              value={S}
+              onChange={(e) => setS(e.target.value.replace(/[^\d-]/g, ""))}
               fullWidth
               margin="normal"
               InputProps={{
@@ -195,7 +227,7 @@ const Tracking = () => {
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="decrement S"
-                      onClick={() => setStat2((v) => String((parseInt(v) || 0) - 1))}
+                      onClick={() => setS((v) => String((parseInt(v) || 0) - 1))}
                       edge="end"
                       size="small"
                     >
@@ -203,7 +235,7 @@ const Tracking = () => {
                     </IconButton>
                     <IconButton
                       aria-label="increment S"
-                      onClick={() => setStat2((v) => String((parseInt(v) || 0) + 1))}
+                      onClick={() => setS((v) => String((parseInt(v) || 0) + 1))}
                       edge="end"
                       size="small"
                     >
